@@ -3,10 +3,10 @@ package indoortec.com.sincronizador;
 
 import dagger.Binds;
 import dagger.Module;
-import indoortec.com.synccontract.SyncUsuario;
+import indoortec.com.synccontract.SyncPlaylist;
 
 @Module
 public interface SincronizadorModule {
     @Binds
-    SyncUsuario sincroniza(Sincronizador sincronizador);
+    SyncPlaylist sincroniza(Sincronizador sincronizador);
 }

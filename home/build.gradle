@@ -35,9 +35,13 @@ dependencies {
     implementation project(path: ':di')
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
 
     implementation deps.dagger.core
+    implementation project(path: ':controllerContract')
+    implementation project(path: ':appdeps')
+    implementation project(path: ':entity')
+    implementation project(path: ':syncContract')
+    implementation project(path: ':observer')
     annotationProcessor deps.dagger.compiler
 
     testImplementation 'junit:junit:4.+'

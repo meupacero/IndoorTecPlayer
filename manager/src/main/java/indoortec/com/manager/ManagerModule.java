@@ -2,11 +2,11 @@ package indoortec.com.manager;
 
 import dagger.Binds;
 import dagger.Module;
-import indoortec.com.managercontract.UsuarioManager;
+import indoortec.com.managercontract.PlaylistManager;
 
 @Module
 public interface ManagerModule {
 
     @Binds
-    UsuarioManager usuarioManager(ManagerUsuario managerUsuario);
+    PlaylistManager playlistManager(ManagerPlaylist managerPlaylist);
 }

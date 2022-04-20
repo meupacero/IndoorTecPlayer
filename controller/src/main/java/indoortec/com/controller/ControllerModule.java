@@ -2,11 +2,11 @@ package indoortec.com.controller;
 
 import dagger.Binds;
 import dagger.Module;
-import indoortec.com.controllercontract.UsuarioController;
+import indoortec.com.controllercontract.PlaylistController;
 
 @Module
 public interface ControllerModule {
 
     @Binds
-    UsuarioController usuarioController(ControllerUsuario controllerUsuario);
+    PlaylistController playlistController(ControllerPlaylist controllerPlaylist);
 }

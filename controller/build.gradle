@@ -32,6 +32,8 @@ dependencies {
     implementation project(path: ':controllerContract')
 
     implementation deps.dagger.core
+    implementation project(path: ':entity')
+    implementation deps.arch
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

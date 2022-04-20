@@ -29,6 +29,8 @@ android {
 
 dependencies {
     implementation deps.firebase
+    implementation project(path: ':entity')
+    implementation project(path: ':observer')
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

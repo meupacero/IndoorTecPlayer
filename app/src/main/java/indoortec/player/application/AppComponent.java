@@ -15,6 +15,7 @@ import indoortec.com.providercontract.ProviderDeps;
 import indoortec.com.repositorio.ProviderModulo;
 import indoortec.com.repositorio.RoomModulo;
 import indoortec.com.sincronizador.SincronizadorModule;
+import indoortec.com.synccontract.SyncPlaylist;
 import indoortect.com.api.ApiModule;
 
 @Singleton

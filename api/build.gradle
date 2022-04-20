@@ -43,6 +43,7 @@ dependencies {
 
     implementation deps.dagger.core
     implementation deps.firebase
+    implementation project(path: ':observer')
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

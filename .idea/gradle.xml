@@ -21,6 +21,7 @@
             <option value="$PROJECT_DIR$/home" />
             <option value="$PROJECT_DIR$/manager" />
             <option value="$PROJECT_DIR$/managerContract" />
+            <option value="$PROJECT_DIR$/observer" />
             <option value="$PROJECT_DIR$/providerContract" />
             <option value="$PROJECT_DIR$/repositorio" />
             <option value="$PROJECT_DIR$/sincronizador" />

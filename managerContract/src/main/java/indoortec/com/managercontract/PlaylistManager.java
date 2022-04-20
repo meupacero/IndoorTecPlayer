@@ -1,4 +1,4 @@
 package indoortec.com.managercontract;
 
-public interface UsuarioManager {
+public interface PlaylistManager {
 }

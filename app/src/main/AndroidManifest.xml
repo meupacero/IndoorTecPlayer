@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.IndoorTecPlayer"
-        android:name=".application.AppColetor">
+        android:name=".application.AppIndoorTec">
         <activity
             android:name=".MainActivity"
             android:exported="true">

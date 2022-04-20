@@ -2,12 +2,12 @@ package indoortect.com.api;
 
 import dagger.Binds;
 import dagger.Module;
-import indoortec.com.apicontract.ApiColetor;
+import indoortec.com.apicontract.ApiIndoorTec;
 
 @Module
 public interface ApiModule {
     @Binds
-    ApiColetor apiColetor(ColetorApi coletorApi);
+    ApiIndoorTec apiIndoorTec(IndoorTecApi indoorTecApi);
 
     @Binds
     InterpretadorImpl interpretadorImpl(Interpretador interpretador);

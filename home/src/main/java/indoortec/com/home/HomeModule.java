@@ -6,12 +6,12 @@ import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.IntoMap;
 import indoortec.com.di.ViewModelKey;
-import indoortec.com.home.viewmodel.HomeScreenViewmodel;
+import indoortec.com.home.viewmodel.PlayerViewmodel;
 
 @Module
 public interface HomeModule {
     @Binds
     @IntoMap
-    @ViewModelKey(classKey = HomeScreenViewmodel.class)
-    ViewModel bindViewModel(HomeScreenViewmodel homeViewModel);
+    @ViewModelKey(classKey = PlayerViewmodel.class)
+    ViewModel bindViewModel(PlayerViewmodel homeViewModel);
 }

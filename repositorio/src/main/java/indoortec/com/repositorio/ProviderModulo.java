@@ -2,11 +2,11 @@ package indoortec.com.repositorio;
 
 import dagger.Binds;
 import dagger.Module;
-import indoortec.com.providercontract.UsuarioProvider;
-import indoortec.com.repositorio.provider.ProviderUsuario;
+import indoortec.com.providercontract.PlayListProvider;
+import indoortec.com.repositorio.provider.ProviderPlayList;
 
 @Module
 public interface ProviderModulo {
     @Binds
-    UsuarioProvider usuarioProvider(ProviderUsuario providerUsuario);
+    PlayListProvider playlistProvider(ProviderPlayList providerPlayList);
 }

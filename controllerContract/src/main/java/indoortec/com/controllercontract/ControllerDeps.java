@@ -1,5 +1,8 @@
 package indoortec.com.controllercontract;
 
+import indoortec.com.synccontract.SyncPlaylist;
+
 public interface ControllerDeps {
-    UsuarioController usuarioController();
+    SyncPlaylist syncPlaylist();
+    PlaylistController playlistController();
 }

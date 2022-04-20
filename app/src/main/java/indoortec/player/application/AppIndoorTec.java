@@ -10,7 +10,7 @@ import indoortec.com.managercontract.ManagerDeps;
 import indoortec.com.providercontract.ProviderDeps;
 
 
-public class AppColetor extends Application implements HasAppDeps {
+public class AppIndoorTec extends Application implements HasAppDeps {
     private static AppComponent appComponent;
 
     public AppComponent getApplicationComponent() {

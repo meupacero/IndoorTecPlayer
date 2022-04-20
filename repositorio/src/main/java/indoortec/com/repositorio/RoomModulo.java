@@ -7,7 +7,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import indoortec.com.repositorio.dao.AppDatabase;
-import indoortec.com.repositorio.dao.RoomUsuarioDao;
+import indoortec.com.repositorio.dao.RoomPlayListDao;
 
 @Module
 public class RoomModulo {
@@ -19,7 +19,7 @@ public class RoomModulo {
 
     @Singleton
     @Provides
-    RoomUsuarioDao roomUsuarioDao(AppDatabase appDatabase){
-        return appDatabase.getUsuarioDao();
+    RoomPlayListDao roomPlaylistDao(AppDatabase appDatabase){
+        return appDatabase.getPlaylistDao();
     }
 }
