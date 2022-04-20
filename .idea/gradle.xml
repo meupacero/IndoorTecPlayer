@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="testRunner" value="GRADLE" />
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/api" />
+            <option value="$PROJECT_DIR$/apiContract" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/appdeps" />
+            <option value="$PROJECT_DIR$/controller" />
+            <option value="$PROJECT_DIR$/controllerContract" />
+            <option value="$PROJECT_DIR$/di" />
+            <option value="$PROJECT_DIR$/entity" />
+            <option value="$PROJECT_DIR$/home" />
+            <option value="$PROJECT_DIR$/manager" />
+            <option value="$PROJECT_DIR$/managerContract" />
+            <option value="$PROJECT_DIR$/providerContract" />
+            <option value="$PROJECT_DIR$/repositorio" />
+            <option value="$PROJECT_DIR$/sincronizador" />
+            <option value="$PROJECT_DIR$/syncContract" />
+          </set>
+        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
