@@ -24,6 +24,7 @@
             <option value="$PROJECT_DIR$/observer" />
             <option value="$PROJECT_DIR$/providerContract" />
             <option value="$PROJECT_DIR$/repositorio" />
+            <option value="$PROJECT_DIR$/sessao" />
             <option value="$PROJECT_DIR$/sincronizador" />
             <option value="$PROJECT_DIR$/syncContract" />
           </set>

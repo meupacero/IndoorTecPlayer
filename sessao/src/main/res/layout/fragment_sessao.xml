@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SessaoFragment"
+    android:background="#212739"
+    tools:ignore="UnusedAttribute,ContentDescription">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gui1"
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintGuide_percent="0.04"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gui2"
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintGuide_percent="0.12"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gui3"
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintGuide_percent="0.18"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gui4"
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintGuide_percent="0.8"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/gui5"
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintGuide_percent="0.92"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            app:autoSizeMaxTextSize="200sp"
+            app:autoSizeMinTextSize="1sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:maxLines="1"
+            android:text="@string/descritivo_2"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+
+            app:layout_constraintBottom_toTopOf="@+id/gui2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/gui1" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            app:autoSizeMaxTextSize="200sp"
+            app:autoSizeMinTextSize="1sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+            android:maxLines="1"
+
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="@string/descritivo_3"
+            android:textColor="@android:color/white"
+
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/gui3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/gui2" />
+
+        <RelativeLayout
+            android:id="@+id/qr"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:background="@drawable/background"
+
+            app:layout_constraintDimensionRatio="1:1"
+
+            app:layout_constraintHeight_percent="0.4"
+
+            app:layout_constraintBottom_toTopOf="@+id/gui4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/gui3">
+
+            <ProgressBar
+                android:id="@+id/loagind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminate="true" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            app:autoSizeMaxTextSize="200sp"
+            app:autoSizeMinTextSize="1sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="@string/descritivo"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+
+            app:layout_constraintWidth_percent="0.8"
+
+            app:layout_constraintBottom_toTopOf="@+id/gui5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/gui4" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
-import indoortec.com.home.PlayerFragment;
+import indoortec.com.sessao.SessaoFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        PlayerFragment fragment = new PlayerFragment();
+        SessaoFragment fragment = new SessaoFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.root, fragment);
         ft.commit();

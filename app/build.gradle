@@ -47,6 +47,7 @@ dependencies {
     implementation deps.androidx.constraintlayout
 
     implementation deps.dagger.core
+    implementation project(path: ':sessao')
     annotationProcessor deps.dagger.compiler
 
     testImplementation 'junit:junit:4.+'

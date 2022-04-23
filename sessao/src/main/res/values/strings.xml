@@ -1,0 +1,7 @@
+<resources>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="descritivo">Verifique se o código qr está claramente visível na tela do seu dispositivo. Ao se conectar, esta página é atualizada automaticamente</string>
+    <string name="descritivo_2">LER CÓDIGO QR</string>
+    <string name="descritivo_3">Use o leitor de códigos indoortec no seu dispositivo</string>
+</resources>
