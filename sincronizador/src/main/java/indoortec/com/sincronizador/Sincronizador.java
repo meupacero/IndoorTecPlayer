@@ -1,6 +1,7 @@
 package indoortec.com.sincronizador;
 import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.util.Log;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import indoortec.com.apicontract.ApiIndoorTec;
 import indoortec.com.entity.PlayList;
@@ -20,6 +22,7 @@ import maqplan.com.observer.Execute;
 import maqplan.com.observer.Observer;
 
 @SuppressLint("StaticFieldLeak")
+@Singleton
 public class Sincronizador implements SyncPlaylist {
     private final ApiIndoorTec api;
     private boolean sincronizando,revizao;
@@ -28,12 +31,15 @@ public class Sincronizador implements SyncPlaylist {
     private Observer<Execute> executeObserver;
     private final Handler handler = new Handler();
     private final Runnable runnable = this::sincronizaPlaylist;
+    private final String TAG = getClass().getName();
+    private final List<String> nao_existe = new ArrayList<>();
 
     @Inject
     public Sincronizador(ApiIndoorTec api, PlayListProvider playListProvider) {
         this.api = api;
         this.playListProvider = playListProvider;
         storageReference = FirebaseStorage.getInstance().getReference();
+        sincronizaPlaylist();
     }
 
     @Override
@@ -43,8 +49,15 @@ public class Sincronizador implements SyncPlaylist {
 
     @Override
     public void validarPlayList() {
+
+        Log.d(TAG,"INICIANDO VALIDAÇÃO DA LISTA DE REPRODUÇÃO");
+
         api.sincronizaPlaylist(observable -> {
+            observable = validarPlayList(observable);
+
             List<PlayList> playListsLocal = playListProvider.fetchAll();
+
+            Log.d(TAG,"COMPARANDO LISTA DE REPRODUÇÃO COM SERVIDOR");
 
             if (observable.size() != playListsLocal.size()) {
                 revizao = true;
@@ -62,6 +75,8 @@ public class Sincronizador implements SyncPlaylist {
             sincronizando = false;
 
             if (revizao) {
+                Log.d(TAG,"POSSIVEIS DADOS NÃO COLETADOS. FAZENDO REVIZÃO");
+
                 revizao = false;
                 sincronizaPlaylist();
             } else sincronizado();
@@ -69,6 +84,10 @@ public class Sincronizador implements SyncPlaylist {
     }
 
     private void sincronizado() {
+        Log.d(TAG,"------------VALIDAÇÃO CONCLUIDA--------------");
+
+        api.removerMidiasCorrompidas(nao_existe);
+
         handler.removeCallbacks(runnable);
         handler.postDelayed(runnable,60 * 1000L);
     }
@@ -76,12 +95,16 @@ public class Sincronizador implements SyncPlaylist {
     private void sincronizaPlaylist() {
         if (sincronizando) {
             revizao = true;
+
+            Log.d(TAG,"JA EXISTE UMA SINCRONIZAÇÃO EM ANDAMENTE, AO FINAL SERA FEITO UMA REVIZÃO");
             return;
         }
 
         sincronizando = true;
 
         api.sincronizaPlaylist(nuvemPlaylist -> {
+            nuvemPlaylist = validarPlayList(nuvemPlaylist);
+
             if (nuvemPlaylist.size() == 0){
                 limpaPlaylist();
                 return;
@@ -137,6 +160,8 @@ public class Sincronizador implements SyncPlaylist {
                     pendentePlaylist.add(nuvemMidia);
             }
 
+            Log.d(TAG,"EXISTEM " + pendentePlaylist.size() + "ITENS A SEREM BAIXADOS");
+
             baixarMidias(0,nuvemPlaylist,localPlaylist,pendentePlaylist);
         });
     }
@@ -145,6 +170,9 @@ public class Sincronizador implements SyncPlaylist {
         if (revizao) {
             revizao = false;
             sincronizando = false;
+
+            Log.d(TAG,"POSSIVEIS DADOS NÃO COLETADOS. FAZENDO REVIZÃO");
+
             sincronizaPlaylist();
             return;
         }
@@ -155,13 +183,27 @@ public class Sincronizador implements SyncPlaylist {
 
             File file = new File("",itemDownload.storage);
 
+            Log.d(TAG,"INICIANDO DOWNLOAD DA MIDIA : "+itemDownload.storage);
+
             if (file.exists() && file.length() == Integer.parseInt(itemDownload.tamanho)) {
+                Log.d(TAG,"ESTE AQUIVO JA FOI BAIXADO : "+itemDownload.storage + "PULANDO DOWNLOAD");
                 baixarMidias(position + 1 ,nuvemPlaylist,localPlaylist,pendentePlaylist);
-            } else {
+            } else if (nao_existe.contains(itemDownload.storage)){
+                Log.d(TAG,"ESTA MIDIA NÃO EXISTE NO STORAGE");
+                baixarMidias(position + 1 ,nuvemPlaylist,localPlaylist,pendentePlaylist);
+            }else {
                 storageReference.child(itemDownload.storage).getFile(file).addOnSuccessListener(taskSnapshot -> {
+                    Log.d(TAG,"DOWNLOAD CONCLUIDO");
                     baixarMidias(position + 1 ,nuvemPlaylist,localPlaylist,pendentePlaylist);
                 }).addOnFailureListener(e -> {
+                    Log.d(TAG,"ERRO AO BAIXAR MIDIA : "+e.getMessage());
                     e.printStackTrace();
+
+                    if (e.getMessage() != null && e.getMessage().contains("Object does not exist at location")){
+                        nao_existe.add(itemDownload.storage);
+                        nuvemPlaylist.remove(itemDownload);
+                    }
+
                     baixarMidias(position + 1 ,nuvemPlaylist,localPlaylist,pendentePlaylist);
                 });
             }
@@ -169,6 +211,8 @@ public class Sincronizador implements SyncPlaylist {
     }
 
     private void atualizaPlaylist(List<PlayList> nuvemPlaylist, List<PlayList> localPlaylist) {
+        Log.d(TAG,"CRIANDO PENDENCIA PARA ATUALIZAR APÓS REPRODUÇÃO DE MIDIA");
+
         SincronizaDados sincronizaDados = new SincronizaDados(nuvemPlaylist,localPlaylist,playListProvider);
         if (executeObserver != null){
             executeObserver.observer(sincronizaDados);
@@ -181,4 +225,15 @@ public class Sincronizador implements SyncPlaylist {
             executeObserver.observer(limpaMidias);
         }
     }
+
+    private List<PlayList> validarPlayList(List<PlayList> playListList) {
+        List<PlayList> pendentes = new ArrayList<>();
+
+        for (PlayList playList : playListList){
+            if (!nao_existe.contains(playList.storage))
+                pendentes.add(playList);
+        }
+        return pendentes;
+    }
+
 }

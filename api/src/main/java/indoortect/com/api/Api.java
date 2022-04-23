@@ -3,8 +3,11 @@ import androidx.annotation.NonNull;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import indoortect.com.api.firebase.FirebaseRequest;
 
+@Singleton
 public class Api implements ApiImpl {
     private final DatabaseReference databaseReferencePlaylist,databaseReference;
 

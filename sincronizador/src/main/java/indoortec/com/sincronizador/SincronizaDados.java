@@ -6,12 +6,11 @@ import java.util.List;
 
 import indoortec.com.entity.PlayList;
 import indoortec.com.providercontract.PlayListProvider;
-import maqplan.com.observer.Action;
 import maqplan.com.observer.Execute;
+import maqplan.com.observer.Observer;
 
 public class SincronizaDados implements Execute {
     private final List<PlayList> nuvemPlaylist, localPlaylist;
-    private boolean run = false;
     private final PlayListProvider providerPlaylist;
 
     public SincronizaDados(List<PlayList> nuvemPlaylist, List<PlayList> localPlaylist, PlayListProvider providerPlaylist) {
@@ -21,9 +20,7 @@ public class SincronizaDados implements Execute {
     }
 
     @Override
-    public void execute(Action action) {
-        run = true;
-
+    public void execute(Observer<List<PlayList>> observer) {
         for (PlayList midiaNuvem : nuvemPlaylist) {
 
             boolean existe = false;
@@ -79,10 +76,7 @@ public class SincronizaDados implements Execute {
 
         providerPlaylist.removeAll();
         providerPlaylist.insert(playLists);
-    }
 
-    @Override
-    public boolean isRun() {
-        return run;
+        observer.observer(playLists);
     }
 }

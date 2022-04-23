@@ -7,4 +7,6 @@ import maqplan.com.observer.Observer;
 
 public interface ApiIndoorTec {
     void sincronizaPlaylist(Observer<List<PlayList>> listObserver);
+
+    void removerMidiasCorrompidas(List<String> playlistCorrompida);
 }

@@ -1,18 +1,16 @@
 package indoortec.com.sincronizador;
 
-import maqplan.com.observer.Action;
+import java.util.ArrayList;
+import java.util.List;
+
+import indoortec.com.entity.PlayList;
 import maqplan.com.observer.Execute;
+import maqplan.com.observer.Observer;
 
 public class LimpaMidias implements Execute {
-    private boolean run = false;
 
     @Override
-    public void execute(Action action) {
-        run = true;
-    }
-
-    @Override
-    public boolean isRun() {
-        return run;
+    public void execute(Observer<List<PlayList>> action) {
+        action.observer(new ArrayList<>());
     }
 }

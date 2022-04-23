@@ -20,6 +20,7 @@ public class PlayList {
     public String tamanho;
     public String tipo;
     public String data;
+    public String nome;
     
     @Ignore
     public static final String VIDEO = "Video";

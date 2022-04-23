@@ -3,11 +3,13 @@ package indoortec.com.repositorio.provider;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import indoortec.com.entity.PlayList;
 import indoortec.com.providercontract.PlayListProvider;
 import indoortec.com.repositorio.dao.RoomPlayListDao;
 
+@Singleton
 public class ProviderPlayList implements PlayListProvider {
     private final RoomPlayListDao roomPlayListDao;
 

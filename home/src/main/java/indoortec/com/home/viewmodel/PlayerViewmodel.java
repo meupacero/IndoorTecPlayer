@@ -1,5 +1,8 @@
 package indoortec.com.home.viewmodel;
 
+import android.os.Handler;
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -17,24 +20,25 @@ import indoortec.com.synccontract.SyncPlaylist;
 import maqplan.com.observer.Execute;
 import maqplan.com.observer.Observer;
 
-public class PlayerViewmodel extends ViewModel implements Observer<Execute> {
-    private static final List<PlayList> _playlist = new ArrayList<>();
+public class PlayerViewmodel extends ViewModel implements Observer<Execute>, Runnable {
     private static final MutableLiveData<Midia> _midia = new MutableLiveData<>();
+    private static final List<PlayList> _playlist = new ArrayList<>();
     private static final LiveData<Midia> midia = _midia;
 
     private final PlaylistController playlistController;
     private final SyncPlaylist sincronizador;
+    private final Handler handler = new Handler();
 
-    private boolean tocando,tem_modificacoes, segura_display;
-
+    private boolean tocando,segura_display,executando;
     private int position = 0;
     private Execute execute;
+    private final String TAG = getClass().getName();
 
     @Inject
     public PlayerViewmodel(PlaylistController playlistController, SyncPlaylist sincronizador) {
         this.playlistController = playlistController;
         this.sincronizador = sincronizador;
-        this.sincronizador.setObserver(this);
+        sincronizador.setObserver(this);
         init();
     }
 
@@ -45,30 +49,57 @@ public class PlayerViewmodel extends ViewModel implements Observer<Execute> {
     }
 
     private void play() {
-        if (!tocando && _playlist.size() > 0) {
+        if (execute != null) {
+            Log.d(TAG,"EXISTE TAREFAS A SEREM REALIZADAS");
+
+            if (!executando) {
+                executando = true;
+
+                execute.execute((playLists) -> {
+                    _playlist.clear();
+                    _playlist.addAll(playLists);
+
+                    executando = false;
+                    execute = null;
+
+                    Log.d(TAG,"TAREFA CONCLUIDA");
+
+                    play();
+
+                    sincronizador.validarPlayList();
+                });
+            } else throw new RuntimeException("Já existe uma terefa de tratamento de dados em andamento");
+            return;
+        }
+
+        if (!tocando) {
             tocando = true;
 
-            int position_playlist = _playlist.size() - 1;
+            if (_playlist.size() > 0) {
+                int position_playlist = _playlist.size() - 1;
 
-            position ++;
-            position = position >= (position_playlist) ? 0 : position;
+                position ++;
+                position = position >= (position_playlist) ? 0 : position;
 
-            PlayList playListItem = _playlist.get(position);
+                PlayList playListItem = _playlist.get(position);
 
-            String path = getPath(playListItem.storage);
-            Midia midia = new Midia(path,playListItem.tipo);
-            _midia.setValue(midia);
-        } else pararReproducao();
+                String path = getPath(playListItem.storage);
+                Midia midia = new Midia(path,playListItem.tipo);
+
+                Log.d(TAG,"REPRODUZIND :" + midia.path);
+
+                _midia.setValue(midia);
+            } else {
+                pararReproducao();
+                handler.removeCallbacks(this);
+                handler.postDelayed(this,3 * 1000L);
+            }
+        }
     }
 
     public void reproducaoConcluida() {
         pararReproducao();
-        if (execute != null && !execute.isRun())
-            execute.execute(() -> {
-                play();
-                sincronizador.validarPlayList();
-            });
-        else play();
+        play();
     }
 
     private String getPath(String storage) {
@@ -81,6 +112,8 @@ public class PlayerViewmodel extends ViewModel implements Observer<Execute> {
     }
 
     private void pararReproducao() {
+        Log.d(TAG,"REPRODUÇÂO PARADA");
+
         tocando = false;
     }
 
@@ -95,5 +128,10 @@ public class PlayerViewmodel extends ViewModel implements Observer<Execute> {
     @Override
     public void observer(Execute execute) {
         this.execute = execute;
+    }
+
+    @Override
+    public void run() {
+        play();
     }
 }
