@@ -18,8 +18,8 @@ import indoortec.com.apicontract.ApiIndoorTec;
 import indoortec.com.entity.PlayList;
 import indoortec.com.providercontract.PlayListProvider;
 import indoortec.com.synccontract.SyncPlaylist;
-import maqplan.com.observer.Execute;
-import maqplan.com.observer.Observer;
+import indoortec.com.observer.Execute;
+import indoortec.com.observer.Observer;
 
 @SuppressLint("StaticFieldLeak")
 @Singleton

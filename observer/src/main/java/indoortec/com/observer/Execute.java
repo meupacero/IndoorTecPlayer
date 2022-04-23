@@ -1,4 +1,4 @@
-package maqplan.com.observer;
+package indoortec.com.observer;
 
 import java.util.List;
 

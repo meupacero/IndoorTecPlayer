@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import indoortec.com.entity.PlayList;
-import maqplan.com.observer.Execute;
-import maqplan.com.observer.Observer;
+import indoortec.com.observer.Execute;
+import indoortec.com.observer.Observer;
 
 public class LimpaMidias implements Execute {
 

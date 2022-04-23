@@ -6,8 +6,8 @@ import java.util.List;
 
 import indoortec.com.entity.PlayList;
 import indoortec.com.providercontract.PlayListProvider;
-import maqplan.com.observer.Execute;
-import maqplan.com.observer.Observer;
+import indoortec.com.observer.Execute;
+import indoortec.com.observer.Observer;
 
 public class SincronizaDados implements Execute {
     private final List<PlayList> nuvemPlaylist, localPlaylist;

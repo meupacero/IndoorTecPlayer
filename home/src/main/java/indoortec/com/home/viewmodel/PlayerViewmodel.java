@@ -17,8 +17,8 @@ import indoortec.com.controllercontract.PlaylistController;
 import indoortec.com.entity.PlayList;
 import indoortec.com.home.model.Midia;
 import indoortec.com.synccontract.SyncPlaylist;
-import maqplan.com.observer.Execute;
-import maqplan.com.observer.Observer;
+import indoortec.com.observer.Execute;
+import indoortec.com.observer.Observer;
 
 public class PlayerViewmodel extends ViewModel implements Observer<Execute>, Runnable {
     private static final MutableLiveData<Midia> _midia = new MutableLiveData<>();

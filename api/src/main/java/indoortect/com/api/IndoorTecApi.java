@@ -7,7 +7,7 @@ import javax.inject.Singleton;
 
 import indoortec.com.apicontract.ApiIndoorTec;
 import indoortec.com.entity.PlayList;
-import maqplan.com.observer.Observer;
+import indoortec.com.observer.Observer;
 
 @Singleton
 public class IndoorTecApi implements ApiIndoorTec {

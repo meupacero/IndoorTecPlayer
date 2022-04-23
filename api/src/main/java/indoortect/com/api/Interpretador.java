@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 
 import indoortec.com.apicontract.Action;
 import indoortec.com.entity.PlayList;
-import maqplan.com.observer.Observer;
+import indoortec.com.observer.Observer;
 
 @Singleton
 public class Interpretador implements InterpretadorImpl {

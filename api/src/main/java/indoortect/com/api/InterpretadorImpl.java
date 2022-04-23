@@ -3,7 +3,7 @@ package indoortect.com.api;
 import java.util.List;
 
 import indoortec.com.entity.PlayList;
-import maqplan.com.observer.Observer;
+import indoortec.com.observer.Observer;
 
 public interface InterpretadorImpl {
     void sincronizaPlayList(Observer<List<PlayList>> observable);
