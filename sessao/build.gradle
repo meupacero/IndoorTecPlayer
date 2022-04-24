@@ -31,7 +31,6 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':dicontract')
     implementation project(path: ':di')
 
     implementation deps.androidx.constraintlayout
