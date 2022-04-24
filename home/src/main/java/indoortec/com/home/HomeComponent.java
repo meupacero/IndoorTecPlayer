@@ -2,10 +2,13 @@ package indoortec.com.home;
 
 import android.content.Context;
 
+import javax.inject.Singleton;
+
 import dagger.Component;
 import indoortec.com.appdeps.HasAppDeps;
 import indoortec.com.controllercontract.ControllerDeps;
 
+@Singleton
 @Component(dependencies = {ControllerDeps.class}, modules = {HomeModule.class})
 public interface HomeComponent {
     void inject(PlayerFragment playerFragment);

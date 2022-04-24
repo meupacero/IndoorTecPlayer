@@ -1,4 +1,4 @@
-package indoortec.com.home;
+package indoortec.com.sessao;
 
 import androidx.lifecycle.ViewModel;
 
@@ -12,18 +12,19 @@ import dagger.Provides;
 import dagger.multibindings.IntoMap;
 import indoortec.com.di.ViewModelFactory;
 import indoortec.com.di.ViewModelKey;
-import indoortec.com.home.viewmodel.PlayerViewmodel;
+import indoortec.com.sessao.viewmodel.SessaoViewmodel;
 
 @Module
-public class HomeModule {
+public class SessaoModule {
     @Singleton
     @Provides
     @IntoMap
-    @ViewModelKey(classKey = PlayerViewmodel.class)
-    ViewModel bindViewModel(PlayerViewmodel homeViewModel){
+    @ViewModelKey(classKey = SessaoViewmodel.class)
+    ViewModel bindViewModel(SessaoViewmodel homeViewModel){
         return homeViewModel;
     }
 
+    @Singleton
     @Provides
     ViewModelFactory factory(Map<Class<? extends ViewModel>, Provider<ViewModel>> classToViewModel){
         return new ViewModelFactory(classToViewModel);

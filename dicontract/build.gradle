@@ -25,25 +25,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    viewBinding{
-        enabled = true
-    }
 }
 
 dependencies {
-
-    implementation project(path: ':controllerContract')
-    implementation project(path: ':appdeps')
-    implementation project(path: ':entity')
-    implementation project(path: ':syncContract')
-    implementation project(path: ':observer')
-
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-
     implementation deps.dagger.core
-    implementation project(path: ':dicontract')
-    implementation project(path: ':di')
-    annotationProcessor deps.dagger.compiler
+    implementation deps.androidx.viewmodel
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

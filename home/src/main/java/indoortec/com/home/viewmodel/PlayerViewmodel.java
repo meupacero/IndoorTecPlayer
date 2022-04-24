@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import indoortec.com.controllercontract.PlaylistController;
 import indoortec.com.entity.PlayList;
@@ -20,6 +21,7 @@ import indoortec.com.synccontract.SyncPlaylist;
 import indoortec.com.observer.Execute;
 import indoortec.com.observer.Observer;
 
+@Singleton
 public class PlayerViewmodel extends ViewModel implements Observer<Execute>, Runnable {
     private static final MutableLiveData<Midia> _midia = new MutableLiveData<>();
     private static final List<PlayList> _playlist = new ArrayList<>();
@@ -40,6 +42,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Execute>, Run
         this.sincronizador = sincronizador;
         sincronizador.setObserver(this);
         init();
+        Log.d("xxx","PlayerViewmodel");
     }
 
     private void init() {
