@@ -4,4 +4,5 @@ import indoortec.com.entity.Usuario;
 
 public interface UsuarioProvider {
     void gravar(Usuario usuairo);
+    Usuario usuarioLogado();
 }

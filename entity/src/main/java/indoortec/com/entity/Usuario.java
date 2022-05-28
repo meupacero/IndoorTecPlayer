@@ -13,4 +13,5 @@ public class Usuario {
     public String deviceId;
     public String account_uid;
     public boolean logado;
+    public String uid_grupo;
 }

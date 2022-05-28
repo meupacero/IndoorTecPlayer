@@ -1,6 +1,9 @@
 package indoortec.com.home.viewmodel;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -16,6 +19,7 @@ import javax.inject.Singleton;
 
 import indoortec.com.controllercontract.PlaylistController;
 import indoortec.com.entity.PlayList;
+import indoortec.com.entity.Usuario;
 import indoortec.com.home.model.Midia;
 import indoortec.com.synccontract.SyncPlaylist;
 import indoortec.com.observer.Execute;
@@ -23,32 +27,44 @@ import indoortec.com.observer.Observer;
 
 @Singleton
 public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runnable {
-    private static final MutableLiveData<Midia> _midia = new MutableLiveData<>();
-    private static final List<PlayList> _playlist = new ArrayList<>();
-    private static final LiveData<Midia> midia = _midia;
+    private final MutableLiveData<Midia> _midia = new MutableLiveData<>();
+    public final LiveData<Midia> midia = _midia;
+
+    private final MutableLiveData<Boolean> _usuario = new MutableLiveData<>();
+    public final LiveData<Boolean> usuario = _usuario;
+
+    private final List<PlayList> _playlist = new ArrayList<>();
 
     private final PlaylistController playlistController;
     private final SyncPlaylist sincronizador;
     private final Handler handler = new Handler();
+    private final String deviceId;
 
     private boolean tocando,segura_display,executando;
     private int position = 0;
     private Execute execute;
     private final String TAG = getClass().getName();
 
+    @SuppressLint("HardwareIds")
     @Inject
-    public PlayerViewmodel(PlaylistController playlistController, SyncPlaylist sincronizador) {
+    public PlayerViewmodel(Context context,PlaylistController playlistController, SyncPlaylist sincronizador) {
         this.playlistController = playlistController;
         this.sincronizador = sincronizador;
         this.sincronizador.setObserver(this);
+        deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         init();
-        Log.d("xxx","PlayerViewmodel");
     }
 
     private void init() {
-        _playlist.clear();
-        _playlist.addAll(playlistController.fetchAll());
-        play();
+        Usuario usuario = sincronizador.usuarioLogado(deviceId);
+        _usuario.setValue(usuario != null);
+
+        if (usuario != null){
+            _playlist.clear();
+            _playlist.addAll(playlistController.fetchAll());
+            sincronizador.sincronizaPlaylist();
+            play();
+        }
     }
 
     private void play() {
@@ -108,10 +124,6 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
     private String getPath(String storage) {
         File file = new File("", storage);
         return file.getPath();
-    }
-
-    public LiveData<Midia> getData() {
-        return midia;
     }
 
     private void pararReproducao() {

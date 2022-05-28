@@ -12,4 +12,6 @@ public interface InterpretadorImpl {
     void removerMidiasCorrompidas(List<String> playlistCorrompida);
 
     void logar(Usuario usuario,Observer<Object> observer);
+
+    void configuraApi(String deviceId, String uid_user, String uid_grupo);
 }

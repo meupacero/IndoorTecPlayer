@@ -54,6 +54,11 @@ public class Interpretador implements InterpretadorImpl {
         api.usuarioAuth().logar(usuario, observer);
     }
 
+    @Override
+    public void configuraApi(String deviceId, String uid_user, String uid_grupo) {
+        api.configuraApi(deviceId,uid_user,uid_grupo);
+    }
+
     private List<PlayList> parsePlayList(DataSnapshot dataSnapshot) {
         List<PlayList> playLists = new ArrayList<>();
         if (dataSnapshot.exists()) {

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import javax.inject.Singleton;
 
+import dagger.BindsInstance;
 import dagger.Component;
 import indoortec.com.appdeps.HasAppDeps;
 import indoortec.com.controllercontract.ControllerDeps;
@@ -17,9 +18,9 @@ public interface HomeComponent {
     interface Factory {
         default HomeComponent create(Context context){
             ControllerDeps controllerDeps = castControllerDeps(context);
-            return create(controllerDeps);
+            return create(controllerDeps,context);
         }
-        HomeComponent create(ControllerDeps controllerDeps);
+        HomeComponent create(ControllerDeps controllerDeps,@BindsInstance Context context);
     }
 
     static ControllerDeps castControllerDeps(Context context){

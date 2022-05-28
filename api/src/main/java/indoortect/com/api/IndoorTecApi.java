@@ -35,4 +35,9 @@ public class IndoorTecApi implements ApiIndoorTec {
         interpretadorImpl.logar(usuario,observer);
     }
 
+    @Override
+    public void configuraApi(String deviceId, String uid_user, String uid_grupo) {
+        interpretadorImpl.configuraApi(deviceId,uid_user,uid_grupo);
+    }
+
 }

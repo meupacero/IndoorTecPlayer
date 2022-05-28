@@ -10,4 +10,8 @@ public interface SyncPlaylist {
     void logar(Usuario usuario,Observer<Object> viewModelObserver);
 
     void setObserver(Observer<Object> observer);
+
+    void sincronizaPlaylist();
+
+    Usuario usuarioLogado(String deviceId);
 }

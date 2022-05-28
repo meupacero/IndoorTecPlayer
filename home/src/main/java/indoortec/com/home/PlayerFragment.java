@@ -66,7 +66,7 @@ public class PlayerFragment extends Fragment implements Observer<Midia>, MediaPl
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         DaggerHomeComponent.factory().create(requireContext()).inject(this);
         playerViewmodel = new ViewModelProvider(this,factory).get(PlayerViewmodel.class);
-        playerViewmodel.getData().observe(getViewLifecycleOwner(), this);
+        playerViewmodel.midia.observe(getViewLifecycleOwner(), this);
     }
 
     @Override

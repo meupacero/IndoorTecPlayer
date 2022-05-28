@@ -3,18 +3,14 @@ package indoortec.com.sincronizador;
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.util.Log;
-
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
 import indoortec.com.apicontract.ApiIndoorTec;
 import indoortec.com.entity.PlayList;
 import indoortec.com.entity.Usuario;
@@ -43,7 +39,6 @@ public class Sincronizador implements SyncPlaylist {
         this.playListProvider = playListProvider;
         this.usuarioProvider = usuarioProvider;
         storageReference = FirebaseStorage.getInstance().getReference();
-        sincronizaPlaylist();
     }
 
     @Override
@@ -110,7 +105,7 @@ public class Sincronizador implements SyncPlaylist {
         handler.postDelayed(runnable,60 * 1000L);
     }
 
-    private void sincronizaPlaylist() {
+    public void sincronizaPlaylist() {
         if (sincronizando) {
             revizao = true;
 
@@ -182,6 +177,17 @@ public class Sincronizador implements SyncPlaylist {
 
             baixarMidias(0,nuvemPlaylist,localPlaylist,pendentePlaylist);
         });
+    }
+
+    @Override
+    public Usuario usuarioLogado(String deviceId) {
+        Usuario usuario = usuarioProvider.usuarioLogado();
+        if (usuario != null){
+            String uid_user = usuario.account_uid;
+            String uid_grupo = usuario.uid_grupo;
+            api.configuraApi(deviceId,uid_user,uid_grupo);
+        }
+        return usuarioProvider.usuarioLogado();
     }
 
     private void baixarMidias(int position,List<PlayList> nuvemPlaylist, List<PlayList> localPlaylist, List<PlayList> pendentePlaylist) {

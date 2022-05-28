@@ -61,14 +61,16 @@ public class FirebaseRequest {
     }
 
     public void execute(Action action) {
-        ValueEventListener valueEventListener = getListener(action);
-        reference.addListenerForSingleValueEvent(valueEventListener);
-        handler.postDelayed(()-> {
-            if (!action.sucesso) {
-                action.timout = true;
-                reference.removeEventListener(valueEventListener);
-            }
-        },60 * 1000L);
+        if (reference != null){
+            ValueEventListener valueEventListener = getListener(action);
+            reference.addListenerForSingleValueEvent(valueEventListener);
+            handler.postDelayed(()-> {
+                if (!action.sucesso) {
+                    action.timout = true;
+                    reference.removeEventListener(valueEventListener);
+                }
+            },60 * 1000L);
+        } else throw new NullPointerException("Referencia da playlist não encontrada");
     }
 
     @NonNull
