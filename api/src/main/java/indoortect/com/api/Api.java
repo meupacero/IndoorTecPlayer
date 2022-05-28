@@ -1,7 +1,11 @@
 package indoortect.com.api;
+
 import androidx.annotation.NonNull;
+
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -10,18 +14,24 @@ import indoortect.com.api.firebase.FirebaseRequest;
 @Singleton
 public class Api implements ApiImpl {
     private final DatabaseReference databaseReferencePlaylist,databaseReference;
+    private final FirebaseAuth auth;
 
     @Inject
     public Api() {
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference();
-
         databaseReferencePlaylist = constroiReferencia(BuildConfig.playlist);
+        auth = FirebaseAuth.getInstance();
     }
 
     @Override
     public FirebaseRequest referenciaPlaylist() {
         return FirebaseRequest.get(databaseReferencePlaylist);
+    }
+
+    @Override
+    public FirebaseRequest usuarioAuth() {
+        return FirebaseRequest.getAuth(auth);
     }
 
     @NonNull

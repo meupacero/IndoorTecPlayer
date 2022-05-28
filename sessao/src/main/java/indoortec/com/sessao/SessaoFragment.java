@@ -1,38 +1,37 @@
 package indoortec.com.sessao;
 
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
 import indoortec.com.di.ViewModelFactory;
+import indoortec.com.entity.Usuario;
 import indoortec.com.sessao.databinding.FragmentSessaoBinding;
 import indoortec.com.sessao.viewmodel.SessaoViewmodel;
 
-
-public class SessaoFragment extends Fragment {
+public class SessaoFragment extends Fragment implements Observer<Object> {
 
     @Inject
     ViewModelFactory factory;
     private SessaoViewmodel sessaoViewmodel;
-
     private FragmentSessaoBinding binding;
 
     public SessaoFragment() {
 
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -44,7 +43,10 @@ public class SessaoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         DaggerSessaoComponent.factory().create(requireContext()).inject(this);
-        sessaoViewmodel = new ViewModelProvider(this,factory).get(SessaoViewmodel.class);
+        sessaoViewmodel = new ViewModelProvider(this, factory).get(SessaoViewmodel.class);
+        sessaoViewmodel.exception.observe(getViewLifecycleOwner(),this);
+        sessaoViewmodel.qrCode.observe(getViewLifecycleOwner(),this);
+        sessaoViewmodel.usuario.observe(getViewLifecycleOwner(),this);
     }
 
     @NonNull
@@ -52,5 +54,80 @@ public class SessaoFragment extends Fragment {
         if (binding == null)
             binding = FragmentSessaoBinding.inflate(getLayoutInflater());
         return binding;
+    }
+
+    @Override
+    public void onChanged(Object object) {
+        if (object instanceof Bitmap) {
+            configuraBitmap((Bitmap) object);
+        } else if (object instanceof Usuario) {
+            usuarioAlterado((Usuario) object);
+        } else if (object instanceof Exception){
+            onErro((Exception) object);
+        }
+    }
+
+    private void configuraBitmap(Bitmap object) {
+        getBinding().qrCode.setImageBitmap(object);
+        mostraQrCode();
+        sessaoViewmodel.iniciarConexao();
+    }
+
+    private void logar(Usuario usuario) {
+        escondeQrCode();
+        sessaoViewmodel.logar(usuario);
+    }
+
+    private void onErro(Exception exception) {
+        verificaUsuarioLogado();
+        Toast.makeText(getContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    private void escondeQrCode() {
+        showView(View.GONE, View.VISIBLE);
+    }
+
+    private void mostraQrCode() {
+        showView(View.VISIBLE, View.GONE);
+    }
+
+    private void showView(int qrCodeVisible, int loadingVisible) {
+        getBinding().qrCode.setVisibility(qrCodeVisible);
+        getBinding().loagind.setVisibility(loadingVisible);
+    }
+
+    private void usuarioAlterado(Usuario usuario) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(requireContext().getApplicationContext());
+        preferences.edit().putBoolean("logado", usuario.account_uid != null && !usuario.account_uid.isEmpty()).apply();
+        checkUsuario(usuario);
+    }
+
+    private void checkUsuario(Usuario usuario) {
+        if (usuario.account_uid == null || usuario.account_uid.isEmpty())
+            logar(usuario);
+        else verificaUsuarioLogado();
+    }
+
+    private void verificaUsuarioLogado() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(requireContext().getApplicationContext());
+        boolean usuarioLogado = preferences.getBoolean("logado",false);
+        if (usuarioLogado) {
+            Observer<Boolean> observer = (Observer<Boolean>) requireActivity();
+            observer.onChanged(true);
+        } else init();
+    }
+
+    private void init() {
+        try {
+            sessaoViewmodel.gerarQrCode(requireContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        verificaUsuarioLogado();
     }
 }

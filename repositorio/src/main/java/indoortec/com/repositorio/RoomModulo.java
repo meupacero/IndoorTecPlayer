@@ -8,6 +8,7 @@ import dagger.Module;
 import dagger.Provides;
 import indoortec.com.repositorio.dao.AppDatabase;
 import indoortec.com.repositorio.dao.RoomPlayListDao;
+import indoortec.com.repositorio.dao.RoomUsuarioDao;
 
 @Module
 public class RoomModulo {
@@ -21,5 +22,11 @@ public class RoomModulo {
     @Provides
     RoomPlayListDao roomPlaylistDao(AppDatabase appDatabase){
         return appDatabase.getPlaylistDao();
+    }
+
+    @Singleton
+    @Provides
+    RoomUsuarioDao roomUsuarioDao(AppDatabase appDatabase){
+        return appDatabase.getUsuarioDao();
     }
 }

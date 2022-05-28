@@ -25,7 +25,8 @@ ext.versions = [
         "arch" : "1.0.1",
         "appcompat":"1.4.1",
         "material":"1.5.0",
-        "firebase":"19.2.1"
+        "firebase":"19.2.1",
+        "auth":"20.0.4"
 ]
 
 ext.deps = [
@@ -46,7 +47,8 @@ ext.deps = [
         ],
         "truth" : "com.google.truth:truth:${versions.truth}",
         "arch" : "android.arch.paging:runtime:${versions.arch}",
-        "firebase" : "com.google.firebase:firebase-database:${versions.firebase}"
+        "firebase" : "com.google.firebase:firebase-database:${versions.firebase}",
+        "auth" : "com.google.firebase:firebase-auth:${versions.auth}"
 ]
 
 task clean(type: Delete) {

@@ -1,4 +1,5 @@
 package indoortec.com.sincronizador;
+
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.util.Log;
@@ -16,10 +17,11 @@ import javax.inject.Singleton;
 
 import indoortec.com.apicontract.ApiIndoorTec;
 import indoortec.com.entity.PlayList;
-import indoortec.com.providercontract.PlayListProvider;
-import indoortec.com.synccontract.SyncPlaylist;
-import indoortec.com.observer.Execute;
+import indoortec.com.entity.Usuario;
 import indoortec.com.observer.Observer;
+import indoortec.com.providercontract.PlayListProvider;
+import indoortec.com.providercontract.UsuarioProvider;
+import indoortec.com.synccontract.SyncPlaylist;
 
 @SuppressLint("StaticFieldLeak")
 @Singleton
@@ -27,24 +29,40 @@ public class Sincronizador implements SyncPlaylist {
     private final ApiIndoorTec api;
     private boolean sincronizando,revizao;
     private final PlayListProvider playListProvider;
+    private final UsuarioProvider usuarioProvider;
     private final StorageReference storageReference;
-    private Observer<Execute> executeObserver;
     private final Handler handler = new Handler();
     private final Runnable runnable = this::sincronizaPlaylist;
     private final String TAG = getClass().getName();
     private final List<String> nao_existe = new ArrayList<>();
+    private Observer<Object> playerViewModelObserver;
 
     @Inject
-    public Sincronizador(ApiIndoorTec api, PlayListProvider playListProvider) {
+    public Sincronizador(ApiIndoorTec api, PlayListProvider playListProvider, UsuarioProvider usuarioProvider) {
         this.api = api;
         this.playListProvider = playListProvider;
+        this.usuarioProvider = usuarioProvider;
         storageReference = FirebaseStorage.getInstance().getReference();
         sincronizaPlaylist();
     }
 
     @Override
-    public void setObserver(Observer<Execute> executeObserver) {
-        this.executeObserver = executeObserver;
+    public void logar(Usuario usuario,Observer<Object> viewModelObserver) {
+        api.logar(usuario, observer -> {
+            if (observer instanceof Exception){
+                viewModelObserver.observer(observer);
+                return;
+            }
+            Usuario user = (Usuario) observer;
+            user.logado = true;
+            usuarioProvider.gravar(user);
+            viewModelObserver.observer(user);
+        });
+    }
+
+    @Override
+    public void setObserver(Observer<Object> observer) {
+        this.playerViewModelObserver = observer;
     }
 
     @Override
@@ -214,15 +232,15 @@ public class Sincronizador implements SyncPlaylist {
         Log.d(TAG,"CRIANDO PENDENCIA PARA ATUALIZAR APÓS REPRODUÇÃO DE MIDIA");
 
         SincronizaDados sincronizaDados = new SincronizaDados(nuvemPlaylist,localPlaylist,playListProvider);
-        if (executeObserver != null){
-            executeObserver.observer(sincronizaDados);
+        if (playerViewModelObserver != null){
+            playerViewModelObserver.observer(sincronizaDados);
         }
     }
 
     private void limpaPlaylist() {
         LimpaMidias limpaMidias = new LimpaMidias();
-        if (executeObserver != null){
-            executeObserver.observer(limpaMidias);
+        if (playerViewModelObserver != null){
+            playerViewModelObserver.observer(limpaMidias);
         }
     }
 

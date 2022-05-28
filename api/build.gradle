@@ -43,6 +43,7 @@ dependencies {
 
     implementation deps.dagger.core
     implementation deps.firebase
+    implementation deps.auth
     implementation project(path: ':observer')
 
     testImplementation 'junit:junit:4.+'

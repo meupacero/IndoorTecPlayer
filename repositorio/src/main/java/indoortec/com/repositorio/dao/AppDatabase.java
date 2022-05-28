@@ -7,8 +7,9 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import indoortec.com.entity.PlayList;
+import indoortec.com.entity.Usuario;
 
-@Database(entities = {PlayList.class}, version = 1,exportSchema = false)
+@Database(entities = {PlayList.class, Usuario.class}, version = 1,exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase appDatabase;
 
@@ -20,4 +21,6 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     public abstract RoomPlayListDao getPlaylistDao();
+
+    public abstract RoomUsuarioDao getUsuarioDao();
 }

@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 
 import indoortec.com.apicontract.Action;
 import indoortec.com.entity.PlayList;
+import indoortec.com.entity.Usuario;
 import indoortec.com.observer.Observer;
 
 @Singleton
@@ -46,6 +47,11 @@ public class Interpretador implements InterpretadorImpl {
                 }
             }
         });
+    }
+
+    @Override
+    public void logar(Usuario usuario,Observer<Object> observer) {
+        api.usuarioAuth().logar(usuario, observer);
     }
 
     private List<PlayList> parsePlayList(DataSnapshot dataSnapshot) {

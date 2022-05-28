@@ -22,7 +22,7 @@ import indoortec.com.observer.Execute;
 import indoortec.com.observer.Observer;
 
 @Singleton
-public class PlayerViewmodel extends ViewModel implements Observer<Execute>, Runnable {
+public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runnable {
     private static final MutableLiveData<Midia> _midia = new MutableLiveData<>();
     private static final List<PlayList> _playlist = new ArrayList<>();
     private static final LiveData<Midia> midia = _midia;
@@ -40,7 +40,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Execute>, Run
     public PlayerViewmodel(PlaylistController playlistController, SyncPlaylist sincronizador) {
         this.playlistController = playlistController;
         this.sincronizador = sincronizador;
-        sincronizador.setObserver(this);
+        this.sincronizador.setObserver(this);
         init();
         Log.d("xxx","PlayerViewmodel");
     }
@@ -116,7 +116,6 @@ public class PlayerViewmodel extends ViewModel implements Observer<Execute>, Run
 
     private void pararReproducao() {
         Log.d(TAG,"REPRODUÇÂO PARADA");
-
         tocando = false;
     }
 
@@ -129,8 +128,8 @@ public class PlayerViewmodel extends ViewModel implements Observer<Execute>, Run
     }
 
     @Override
-    public void observer(Execute execute) {
-        this.execute = execute;
+    public void observer(Object execute) {
+        this.execute = (Execute) execute;
     }
 
     @Override
