@@ -2,10 +2,12 @@ package indoortec.com.home.viewmodel;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -62,7 +64,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
         if (usuario != null){
             _playlist.clear();
             _playlist.addAll(playlistController.fetchAll());
-            sincronizador.sincronizaPlaylist();
+            sincronizador.sincronizar(this::observer);
             play();
         }
     }
@@ -85,7 +87,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
 
                     play();
 
-                    sincronizador.validarPlayList();
+                    sincronizador.validarPlayList(this::observer);
                 });
             } else throw new RuntimeException("Já existe uma terefa de tratamento de dados em andamento");
             return;
@@ -97,17 +99,15 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
             if (_playlist.size() > 0) {
                 int position_playlist = _playlist.size() - 1;
 
-                position ++;
-                position = position >= (position_playlist) ? 0 : position;
+                position = position > position_playlist ? 0 : position;
 
                 PlayList playListItem = _playlist.get(position);
+                Midia midia = parseMidia(playListItem);
 
-                String path = getPath(playListItem.storage);
-                Midia midia = new Midia(path,playListItem.tipo);
-
-                Log.d(TAG,"REPRODUZIND :" + midia.path);
+                Log.d(TAG,"REPRODUZIND :" + midia.file.getPath());
 
                 _midia.setValue(midia);
+                position ++;
             } else {
                 pararReproducao();
                 handler.removeCallbacks(this);
@@ -116,14 +116,23 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
         }
     }
 
+    @NonNull
+    private Midia parseMidia(PlayList playListItem) {
+        String diretorio = getPath(playListItem.storage);
+        File file = new File(diretorio);
+        return new Midia(file, playListItem.tipo);
+    }
+
     public void reproducaoConcluida() {
         pararReproducao();
         play();
     }
 
     private String getPath(String storage) {
-        File file = new File("", storage);
-        return file.getPath();
+        File root = new File(Environment.getExternalStorageDirectory(),"indoortec");
+        root = new File(root,"playlist");
+        root = new File(root,storage);
+        return root.getPath();
     }
 
     private void pararReproducao() {
@@ -141,7 +150,12 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
 
     @Override
     public void observer(Object execute) {
-        this.execute = (Execute) execute;
+        if (execute instanceof Execute){
+            this.execute = (Execute) execute;
+        }else if (execute instanceof Exception){
+
+        }
+
     }
 
     @Override

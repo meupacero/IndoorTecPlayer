@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.view.LayoutInflater;
@@ -21,6 +22,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -71,13 +74,14 @@ public class PlayerFragment extends Fragment implements Observer<Midia>, MediaPl
 
     @Override
     public void onChanged(Midia midia) {
+        playImagem(midia);
         if (midia.tipo.equals(VIDEO)){
             playVideo(midia);
         } else playImagem(midia);
     }
 
     private void playVideo(Midia midia) {
-        getBinding().videoPlayer.setVideoPath(midia.path);
+        getBinding().videoPlayer.setVideoPath(midia.file.getPath());
         getBinding().videoPlayer.setVisibility(View.VISIBLE);
         getBinding().videoPlayer.start();
         soltarTela();
@@ -89,7 +93,11 @@ public class PlayerFragment extends Fragment implements Observer<Midia>, MediaPl
             bitmap = null;
         }
 
-        bitmap = BitmapFactory.decodeFile(midia.path);
+        File imgFile = midia.file;
+
+        if(imgFile.exists()){
+            bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        }
 
         segurarTelaLigada();
 

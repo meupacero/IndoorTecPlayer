@@ -16,6 +16,8 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.common.ByteMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import org.json.JSONObject;
+
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
@@ -50,11 +52,16 @@ public class SessaoViewmodel extends ViewModel implements Observer<Object> {
 
     public void gerarQrCode(Context context) throws Exception {
         WifiManager wm = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        String addressIp = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
         deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("deviceId",deviceId);
+        jsonObject.put("enderecoIp",ip);
+        jsonObject.put("porta","9090");
+
         QRCodeWriter writer = new QRCodeWriter();
-        ByteMatrix byteMatrix = writer.encode(addressIp, BarcodeFormat.QR_CODE,512,512);
+        ByteMatrix byteMatrix = writer.encode(jsonObject.toString(), BarcodeFormat.QR_CODE,512,512);
 
         int largura = 512;
         int altura = 512;

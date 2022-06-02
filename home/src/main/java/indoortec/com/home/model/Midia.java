@@ -1,11 +1,13 @@
 package indoortec.com.home.model;
 
+import java.io.File;
+
 public class Midia {
-    public String path;
+    public File file;
     public String tipo;
 
-    public Midia(String path, String tipo) {
-        this.path = path;
+    public Midia(File file, String tipo) {
+        this.file = file;
         this.tipo = tipo;
     }
 }

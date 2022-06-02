@@ -42,6 +42,7 @@ dependencies {
 
     implementation deps.dagger.core
     implementation project(path: ':di')
+    implementation deps.androidx.constraintlayout
     annotationProcessor deps.dagger.compiler
 
     testImplementation 'junit:junit:4.+'

@@ -1,9 +1,20 @@
 package indoortect.com.api;
 
 import indoortect.com.api.firebase.FirebaseRequest;
+import indoortect.com.api.requests.RealtimeRequest;
+import indoortect.com.api.requests.StorageRequest;
 
 public interface ApiImpl {
-    FirebaseRequest referenciaPlaylist();
+
     FirebaseRequest usuarioAuth();
-    void configuraApi(String deviceId, String uid_user, String uid_grupo);
+
+    RealtimeRequest idPlaylistDb();
+
+    void configuraApi(String uid_device, String uid_user);
+
+    RealtimeRequest playlist(String playlistId);
+
+    RealtimeRequest midiaRef(String midiaId);
+
+    StorageRequest midiaStorage(String storage);
 }

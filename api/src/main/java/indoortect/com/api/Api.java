@@ -5,31 +5,34 @@ import androidx.annotation.NonNull;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import indoortect.com.api.firebase.FirebaseRequest;
+import indoortect.com.api.requests.RealtimeRequest;
+import indoortect.com.api.requests.StorageRequest;
 
 @Singleton
 public class Api implements ApiImpl {
-    private DatabaseReference databaseReferencePlaylist;
-    private final DatabaseReference databaseReference;
     private final FirebaseAuth auth;
+    private String uid_device;
     private String uid_user;
-    private String deviceId;
-    private String uid_grupo;
+    private DatabaseReference playlistIdRef;
+    private final DatabaseReference databaseReference;
+    private final StorageReference storageReference;
+    private StorageReference midia;
 
     @Inject
     public Api() {
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
         auth = FirebaseAuth.getInstance();
-    }
-
-    @Override
-    public FirebaseRequest referenciaPlaylist() {
-        return FirebaseRequest.get(databaseReferencePlaylist);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference();
     }
 
     @Override
@@ -38,28 +41,49 @@ public class Api implements ApiImpl {
     }
 
     @Override
-    public void configuraApi(String deviceId, String uid_user, String uid_grupo) {
-        this.deviceId = deviceId;
+    public RealtimeRequest idPlaylistDb() {
+        return new RealtimeRequest(playlistIdRef);
+    }
+
+    @Override
+    public RealtimeRequest playlist(String uid_playlist) {
+        String playlistRota = BuildConfig.playlist;
+        playlistRota = playlistRota.replaceAll(BuildConfig.uid_playlist,uid_playlist == null ? "" : uid_playlist);
+        playlistRota = playlistRota.replaceAll(BuildConfig.uid_user,uid_user == null ? "" : uid_user);
+        return new RealtimeRequest(databaseReference.child(playlistRota));
+    }
+
+    @Override
+    public RealtimeRequest midiaRef(String midiaId) {
+        String midiaRef = BuildConfig.midia;
+        midiaRef = midiaRef.replaceAll(BuildConfig.uid_user,uid_user).replaceAll(BuildConfig.uid_midia, midiaId);
+        return new RealtimeRequest(databaseReference.child(midiaRef));
+    }
+
+    @Override
+    public StorageRequest midiaStorage(String storage) {
+        StorageReference reference = storage == null ? midia : midia.child(storage);
+        return new StorageRequest(reference);
+    }
+
+    @Override
+    public void configuraApi(String uid_device, String uid_user) {
+        this.uid_device = uid_device;
         this.uid_user = uid_user;
-        this.uid_grupo = uid_grupo;
-        constroiReferencias();
-    }
-
-    private void constroiReferencias() {
-        databaseReferencePlaylist = constroiReferencia(BuildConfig.playlist);
+        playlistIdRef = getDatabaseReferebce();
+        midia = storageReference.child("usuarios").child(uid_user).child("midia");
     }
 
     @NonNull
-    private DatabaseReference constroiReferencia(String reference) {
-        reference = validarRota(reference);
-        return databaseReference.child(reference);
+    private DatabaseReference getDatabaseReferebce() {
+        return databaseReference.child(getEndPoint());
     }
 
     @NonNull
-    private String validarRota(String rota) {
-        rota = rota.replaceAll(BuildConfig.uid_device,deviceId == null ? "" : deviceId);
-        rota = rota.replaceAll(BuildConfig.uid_grupo,uid_grupo == null ? "padrao" : uid_grupo);
+    private String getEndPoint() {
+        String rota = BuildConfig.playlistId;
         rota = rota.replaceAll(BuildConfig.uid_user,uid_user == null ? "" : uid_user);
+        rota = rota.replaceAll(BuildConfig.uid_device,uid_device == null ? "" : uid_device);
         return rota;
     }
 }

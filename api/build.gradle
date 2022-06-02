@@ -19,16 +19,25 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField("String","playlist", "\"usuarios/--uid_user--/grupos/--uid_grupo--/devices/lista/--uid_device--\"")
+
+            buildConfigField("String","midia", "\"usuarios/--uid_user--/repositorio/midias/--uid_midia--\"")
+            buildConfigField("String","playlistId", "\"usuarios/--uid_user--/dispositivos/--uid_device--/playlistId\"")
+            buildConfigField("String","playlist", "\"usuarios/--uid_user--/playlist/--uid_playlist--/midias\"")
+
+            buildConfigField("String","uid_midia", "\"--uid_midia--\"")
             buildConfigField("String","uid_user", "\"--uid_user--\"")
-            buildConfigField("String","uid_grupo", "\"--uid_grupo--\"")
             buildConfigField("String","uid_device", "\"--uid_device--\"")
+            buildConfigField("String","uid_playlist", "\"--uid_playlist--\"")
         }
         debug {
-            buildConfigField("String","playlist", "\"usuarios/--uid_user--/grupos/--uid_grupo--/devices/lista/--uid_device--\"")
+            buildConfigField("String","midia", "\"usuarios/--uid_user--/repositorio/midias/--uid_midia--\"")
+            buildConfigField("String","playlistId", "\"usuarios/--uid_user--/dispositivos/--uid_device--/playlistId\"")
+            buildConfigField("String","playlist", "\"usuarios/--uid_user--/playlist/--uid_playlist--/midias\"")
+
+            buildConfigField("String","uid_midia", "\"--uid_midia--\"")
             buildConfigField("String","uid_user", "\"--uid_user--\"")
-            buildConfigField("String","uid_grupo", "\"--uid_grupo--\"")
             buildConfigField("String","uid_device", "\"--uid_device--\"")
+            buildConfigField("String","uid_playlist", "\"--uid_playlist--\"")
         }
     }
     compileOptions {
@@ -44,6 +53,7 @@ dependencies {
     implementation deps.dagger.core
     implementation deps.firebase
     implementation deps.auth
+    implementation 'com.google.firebase:firebase-storage:20.0.1'
     implementation project(path: ':observer')
 
     testImplementation 'junit:junit:4.+'

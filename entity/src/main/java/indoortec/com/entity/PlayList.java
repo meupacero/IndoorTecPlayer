@@ -21,9 +21,22 @@ public class PlayList {
     public String tipo;
     public String data;
     public String nome;
-    
+
+    public PlayList() {
+    }
+
     @Ignore
-    public static final String VIDEO = "Video";
+    public PlayList(int id, String storage, String tamanho, String tipo, String data, String nome) {
+        this.id = id;
+        this.storage = storage;
+        this.tamanho = tamanho;
+        this.tipo = tipo;
+        this.data = data;
+        this.nome = nome;
+    }
+
+    @Ignore
+    public static final String VIDEO = "video";
 
     @SuppressLint("SimpleDateFormat")
     @Ignore
@@ -47,5 +60,65 @@ public class PlayList {
             }
         }
         return date;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getStorage() {
+        return storage;
+    }
+
+    public void setStorage(String storage) {
+        this.storage = storage;
+    }
+
+    public String getTamanho() {
+        return tamanho;
+    }
+
+    public void setTamanho(String tamanho) {
+        this.tamanho = tamanho;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public static String getVIDEO() {
+        return VIDEO;
+    }
+
+    public static DateFormat getFormatter() {
+        return formatter;
+    }
+
+    public static DateFormat getFormatterOld() {
+        return formatterOld;
     }
 }

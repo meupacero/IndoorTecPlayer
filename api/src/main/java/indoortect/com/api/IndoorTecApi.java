@@ -1,12 +1,14 @@
 package indoortect.com.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import indoortec.com.apicontract.ApiIndoorTec;
-import indoortec.com.entity.PlayList;
+import indoortec.com.entity.ApiMidia;
+import indoortec.com.entity.ApiStorageItem;
 import indoortec.com.entity.Usuario;
 import indoortec.com.observer.Observer;
 
@@ -14,6 +16,7 @@ import indoortec.com.observer.Observer;
 public class IndoorTecApi implements ApiIndoorTec {
 
     private final InterpretadorImpl interpretadorImpl;
+    public static final List<String> nao_existe = new ArrayList<>();
 
     @Inject
     public IndoorTecApi(InterpretadorImpl interpretadorImpl) {
@@ -21,13 +24,13 @@ public class IndoorTecApi implements ApiIndoorTec {
     }
 
     @Override
-    public void sincronizaPlaylist(Observer<List<PlayList>> listObserver) {
-        interpretadorImpl.sincronizaPlayList(listObserver);
+    public void sincronizar(Observer<List<ApiStorageItem>> observable, Observer<Exception> exceptionObserver) {
+        interpretadorImpl.sincronizar(observable,exceptionObserver);
     }
 
     @Override
-    public void removerMidiasCorrompidas(List<String> playlistCorrompida) {
-        interpretadorImpl.removerMidiasCorrompidas(playlistCorrompida);
+    public void removerMidiasCorrompidas(Observer<Exception> exceptionObserver) {
+        interpretadorImpl.removerMidiasCorrompidas(nao_existe,exceptionObserver);
     }
 
     @Override
@@ -36,8 +39,22 @@ public class IndoorTecApi implements ApiIndoorTec {
     }
 
     @Override
-    public void configuraApi(String deviceId, String uid_user, String uid_grupo) {
-        interpretadorImpl.configuraApi(deviceId,uid_user,uid_grupo);
+    public void configuraApi(String deviceId, String uid_user) {
+        interpretadorImpl.configuraApi(deviceId,uid_user);
     }
 
+    @Override
+    public void pesquisaMidia(String midiaId, Observer<ApiMidia> observer, Observer<Exception> exceptionObserver) {
+        interpretadorImpl.pesquisaMidia(midiaId,observer,exceptionObserver);
+    }
+
+    @Override
+    public void download(ApiStorageItem itemDownload,Observer<Boolean> observer, Observer<Exception> exceptionObserver) {
+        interpretadorImpl.download(itemDownload,observer,exceptionObserver);
+    }
+
+    @Override
+    public boolean existe(String storage) {
+        return !nao_existe.contains(storage);
+    }
 }
