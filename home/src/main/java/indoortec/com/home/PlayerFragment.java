@@ -74,7 +74,6 @@ public class PlayerFragment extends Fragment implements Observer<Midia>, MediaPl
 
     @Override
     public void onChanged(Midia midia) {
-        playImagem(midia);
         if (midia.tipo.equals(VIDEO)){
             playVideo(midia);
         } else playImagem(midia);
