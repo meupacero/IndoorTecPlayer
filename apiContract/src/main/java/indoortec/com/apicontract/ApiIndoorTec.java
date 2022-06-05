@@ -4,6 +4,7 @@ import java.util.List;
 
 import indoortec.com.entity.ApiMidia;
 import indoortec.com.entity.ApiStorageItem;
+import indoortec.com.entity.Conexao;
 import indoortec.com.entity.Usuario;
 import indoortec.com.observer.Observer;
 
@@ -21,4 +22,6 @@ public interface ApiIndoorTec {
     void download(ApiStorageItem itemDownload,Observer<Boolean> observer,Observer<Exception> exceptionObserver);
 
     boolean existe(String storage);
+
+    void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver);
 }

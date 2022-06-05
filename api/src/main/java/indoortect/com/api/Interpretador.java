@@ -11,6 +11,7 @@ import javax.inject.Singleton;
 import indoortec.com.apicontract.Action;
 import indoortec.com.entity.ApiMidia;
 import indoortec.com.entity.ApiStorageItem;
+import indoortec.com.entity.Conexao;
 import indoortec.com.entity.PlayList;
 import indoortec.com.entity.Usuario;
 import indoortec.com.observer.Observer;
@@ -99,6 +100,11 @@ public class Interpretador implements InterpretadorImpl {
     @Override
     public void download(ApiStorageItem itemDownload, Observer<Boolean> sucesso,Observer<Exception> exceptionObserver) {
         api.midiaStorage(itemDownload.getStorage()).download(itemDownload,sucesso,exceptionObserver);
+    }
+
+    @Override
+    public void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver) {
+        api.conexaoRef().setValue(conexao,voidObserver,exceptionObserver);
     }
 
     private List<ApiStorageItem> parseMidiasIds(DataSnapshot dataSnapshot) {

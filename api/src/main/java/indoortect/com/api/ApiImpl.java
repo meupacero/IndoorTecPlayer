@@ -17,4 +17,6 @@ public interface ApiImpl {
     RealtimeRequest midiaRef(String midiaId);
 
     StorageRequest midiaStorage(String storage);
+
+    RealtimeRequest conexaoRef();
 }

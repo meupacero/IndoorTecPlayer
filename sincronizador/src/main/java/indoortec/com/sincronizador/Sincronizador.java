@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import indoortec.com.apicontract.ApiIndoorTec;
 import indoortec.com.entity.ApiStorageItem;
+import indoortec.com.entity.Conexao;
 import indoortec.com.entity.PlayList;
 import indoortec.com.entity.Usuario;
 import indoortec.com.observer.Observer;
@@ -120,10 +121,13 @@ public class Sincronizador implements SyncPlaylist {
 
         sincronizando = true;
 
+        playerViewModelObserver.observer("Iniciando sincronizacao");
+
         api.sincronizar(nuvemPlaylist -> {
             nuvemPlaylist = validarPlayList(nuvemPlaylist);
 
             if (nuvemPlaylist.size() == 0){
+                playerViewModelObserver.observer("Excluindo todas as midias do dispositivo");
                 limpaPlaylist();
                 return;
             }
@@ -172,7 +176,7 @@ public class Sincronizador implements SyncPlaylist {
                     pendentePlaylist.add(nuvemMidia);
             }
 
-            Log.d(TAG,"EXISTEM " + pendentePlaylist.size() + "ITENS A SEREM BAIXADOS");
+            playerViewModelObserver.observer(pendentePlaylist.size() == 0 ? "Nenhum item para baixar" : "Iniciando sincronização de midias");
 
             baixarMidia(0,nuvemPlaylist,localPlaylist,pendentePlaylist,exceptionObserver);
         },exceptionObserver);
@@ -188,12 +192,17 @@ public class Sincronizador implements SyncPlaylist {
         return usuarioProvider.usuarioLogado();
     }
 
+    @Override
+    public void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver) {
+        api.enviarDados(conexao,voidObserver,exceptionObserver);
+    }
+
     private void baixarMidia(int position, List<ApiStorageItem> itemsServidor, List<PlayList> itemsLocal, List<ApiStorageItem> itemsPendentes, Observer<Exception> exceptionObserver) {
         if (revizao) {
             revizao = false;
             sincronizando = false;
 
-            Log.d(TAG,"POSSIVEIS DADOS NÃO COLETADOS. FAZENDO REVIZÃO");
+            playerViewModelObserver.observer("Realizando revizção");
 
             sincronizar(exceptionObserver);
             return;
@@ -203,11 +212,15 @@ public class Sincronizador implements SyncPlaylist {
 
             ApiStorageItem itemDownload = itemsPendentes.get(position);
 
+            playerViewModelObserver.observer("Iniciando download");
+
             api.download(itemDownload, sucesso -> {
+                playerViewModelObserver.observer("Midia baixada");
                 atualizaPlaylist(itemsServidor,itemsLocal);
                 sincronizando = false;
                 sincronizar(exceptionObserver);
             }, exception -> {
+                playerViewModelObserver.observer("Erro ao baixar midia");
                 exception.printStackTrace();
                 sincronizando = false;
                 sincronizar(exceptionObserver);

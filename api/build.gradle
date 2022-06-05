@@ -21,8 +21,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             buildConfigField("String","midia", "\"usuarios/--uid_user--/repositorio/midias/--uid_midia--\"")
-            buildConfigField("String","playlistId", "\"usuarios/--uid_user--/dispositivos/--uid_device--/playlistId\"")
+            buildConfigField("String","playlistId", "\"usuarios/--uid_user--/dispositivos/--uid_device--/sobre/playlistId\"")
             buildConfigField("String","playlist", "\"usuarios/--uid_user--/playlist/--uid_playlist--/midias\"")
+            buildConfigField("String","conexao", "\"usuarios/--uid_user--/dispositivos/--uid_device--/conexao\"")
 
             buildConfigField("String","uid_midia", "\"--uid_midia--\"")
             buildConfigField("String","uid_user", "\"--uid_user--\"")
@@ -31,8 +32,9 @@ android {
         }
         debug {
             buildConfigField("String","midia", "\"usuarios/--uid_user--/repositorio/midias/--uid_midia--\"")
-            buildConfigField("String","playlistId", "\"usuarios/--uid_user--/dispositivos/--uid_device--/playlistId\"")
+            buildConfigField("String","playlistId", "\"usuarios/--uid_user--/dispositivos/--uid_device--/sobre/playlistId\"")
             buildConfigField("String","playlist", "\"usuarios/--uid_user--/playlist/--uid_playlist--/midias\"")
+            buildConfigField("String","conexao", "\"usuarios/--uid_user--/dispositivos/--uid_device--/conexao\"")
 
             buildConfigField("String","uid_midia", "\"--uid_midia--\"")
             buildConfigField("String","uid_user", "\"--uid_user--\"")

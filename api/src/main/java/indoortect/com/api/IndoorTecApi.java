@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 import indoortec.com.apicontract.ApiIndoorTec;
 import indoortec.com.entity.ApiMidia;
 import indoortec.com.entity.ApiStorageItem;
+import indoortec.com.entity.Conexao;
 import indoortec.com.entity.Usuario;
 import indoortec.com.observer.Observer;
 
@@ -56,5 +57,10 @@ public class IndoorTecApi implements ApiIndoorTec {
     @Override
     public boolean existe(String storage) {
         return !nao_existe.contains(storage);
+    }
+
+    @Override
+    public void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver) {
+        interpretadorImpl.enviarDados(conexao,voidObserver,exceptionObserver);
     }
 }

@@ -13,13 +13,17 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import indoortec.com.controllercontract.PlaylistController;
+import indoortec.com.entity.Conexao;
 import indoortec.com.entity.PlayList;
 import indoortec.com.entity.Usuario;
 import indoortec.com.home.model.Midia;
@@ -46,6 +50,9 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
     private int position = 0;
     private Execute execute;
     private final String TAG = getClass().getName();
+    private final Conexao conexao = new Conexao();
+    @SuppressLint("SimpleDateFormat")
+    private static final DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 
     @SuppressLint("HardwareIds")
     @Inject
@@ -66,13 +73,27 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
             _playlist.addAll(playlistController.fetchAll());
             sincronizador.sincronizar(this::observer);
             play();
+            enviaDados();
         }
+    }
+
+
+    private final Runnable sendData = new Runnable() {
+        @Override
+        public void run() {
+            conexao.setDataUltimaAlteracao(formatter.format(new Date()));
+            conexao.setReproduzindo(tocando);
+            sincronizador.enviarDados(conexao, observable -> enviaDados(), observable -> enviaDados());
+        }
+    };
+
+    private void enviaDados() {
+        handler.removeCallbacks(sendData);
+        handler.postDelayed(sendData,5000L);
     }
 
     private void play() {
         if (execute != null) {
-            Log.d(TAG,"EXISTE TAREFAS A SEREM REALIZADAS");
-
             if (!executando) {
                 executando = true;
 
@@ -83,13 +104,11 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
                     executando = false;
                     execute = null;
 
-                    Log.d(TAG,"TAREFA CONCLUIDA");
-
                     play();
 
                     sincronizador.validarPlayList(this::observer);
                 });
-            } else throw new RuntimeException("Já existe uma terefa de tratamento de dados em andamento");
+            }
             return;
         }
 
@@ -97,14 +116,14 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
             tocando = true;
 
             if (_playlist.size() > 0) {
+                conexao.setInformacoes("Reproduzindo");
                 int position_playlist = _playlist.size() - 1;
 
                 position = position > position_playlist ? 0 : position;
 
                 PlayList playListItem = _playlist.get(position);
+                conexao.setStorage(playListItem.storage);
                 Midia midia = parseMidia(playListItem);
-
-                Log.d(TAG,"REPRODUZIND :" + midia.file.getPath());
 
                 _midia.setValue(midia);
                 position ++;
@@ -136,7 +155,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
     }
 
     private void pararReproducao() {
-        Log.d(TAG,"REPRODUÇÂO PARADA");
+        conexao.setInformacoes("Fim da reprodução");
         tocando = false;
     }
 
@@ -152,8 +171,8 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
     public void observer(Object execute) {
         if (execute instanceof Execute){
             this.execute = (Execute) execute;
-        }else if (execute instanceof Exception){
-
+        }else if (execute instanceof String){
+            conexao.setInformacoes((String) execute);
         }
 
     }
