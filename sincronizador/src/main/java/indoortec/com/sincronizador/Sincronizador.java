@@ -121,13 +121,13 @@ public class Sincronizador implements SyncPlaylist {
 
         sincronizando = true;
 
-        playerViewModelObserver.observer("Iniciando sincronizacao");
+        playerViewModelObserver.observer("Verificando se há atualizações");
 
         api.sincronizar(nuvemPlaylist -> {
             nuvemPlaylist = validarPlayList(nuvemPlaylist);
 
             if (nuvemPlaylist.size() == 0){
-                playerViewModelObserver.observer("Excluindo todas as midias do dispositivo");
+                playerViewModelObserver.observer("A playlist não está configurada");
                 limpaPlaylist();
                 return;
             }
@@ -176,7 +176,7 @@ public class Sincronizador implements SyncPlaylist {
                     pendentePlaylist.add(nuvemMidia);
             }
 
-            playerViewModelObserver.observer(pendentePlaylist.size() == 0 ? "Nenhum item para baixar" : "Iniciando sincronização de midias");
+            playerViewModelObserver.observer(pendentePlaylist.size() == 0 ? "A playlist está atualizada" : "Iniciando sincronização de midias");
 
             baixarMidia(0,nuvemPlaylist,localPlaylist,pendentePlaylist,exceptionObserver);
         },exceptionObserver);

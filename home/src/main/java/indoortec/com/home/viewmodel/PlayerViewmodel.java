@@ -52,7 +52,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
     private final String TAG = getClass().getName();
     private final Conexao conexao = new Conexao();
     @SuppressLint("SimpleDateFormat")
-    private static final DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+    private static final DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
     @SuppressLint("HardwareIds")
     @Inject
