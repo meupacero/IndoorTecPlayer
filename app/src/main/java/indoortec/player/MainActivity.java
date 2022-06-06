@@ -1,9 +1,9 @@
 package indoortec.player;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
-import android.os.Bundle;
 
 import indoortec.com.home.PlayerFragment;
 import indoortec.com.sessao.SessaoFragment;
@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity implements androidx.lifecycl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         onChanged(false);
+        AutoStart.enable(this);
     }
 
     @Override
