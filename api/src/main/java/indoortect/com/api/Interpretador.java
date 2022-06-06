@@ -126,7 +126,9 @@ public class Interpretador implements InterpretadorImpl {
                         exception.printStackTrace();
                     }
                 }
-                voidObserver.observer(remove != null && remove);
+                if (remove != null && remove){
+                    api.removeRef().setValue(false, observable -> voidObserver.observer(true), exceptionObserver);
+                } else voidObserver.observer(false);
             }
         }, exceptionObserver);
     }
