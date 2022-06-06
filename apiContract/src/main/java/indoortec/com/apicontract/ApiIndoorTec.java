@@ -15,6 +15,8 @@ public interface ApiIndoorTec {
 
     void logar(Usuario usuario,Observer<Object> observer);
 
+    void deslogar();
+
     void configuraApi(String deviceId, String uid_user);
 
     void pesquisaMidia(String midiaId, Observer<ApiMidia> observer, Observer<Exception> exceptionObserver);
@@ -24,4 +26,6 @@ public interface ApiIndoorTec {
     boolean existe(String storage);
 
     void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver);
+
+    void isRemove(Observer<Exception> exceptionObserver,Observer<Boolean> observer);
 }

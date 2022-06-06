@@ -20,6 +20,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
+            buildConfigField("String","remove", "\"usuarios/--uid_user--/dispositivos/--uid_device--/sobre/remove\"")
             buildConfigField("String","midia", "\"usuarios/--uid_user--/repositorio/midias/--uid_midia--\"")
             buildConfigField("String","playlistId", "\"usuarios/--uid_user--/dispositivos/--uid_device--/sobre/playlistId\"")
             buildConfigField("String","playlist", "\"usuarios/--uid_user--/playlist/--uid_playlist--/midias\"")
@@ -31,6 +32,7 @@ android {
             buildConfigField("String","uid_playlist", "\"--uid_playlist--\"")
         }
         debug {
+            buildConfigField("String","remove", "\"usuarios/--uid_user--/dispositivos/--uid_device--/sobre/remove\"")
             buildConfigField("String","midia", "\"usuarios/--uid_user--/repositorio/midias/--uid_midia--\"")
             buildConfigField("String","playlistId", "\"usuarios/--uid_user--/dispositivos/--uid_device--/sobre/playlistId\"")
             buildConfigField("String","playlist", "\"usuarios/--uid_user--/playlist/--uid_playlist--/midias\"")

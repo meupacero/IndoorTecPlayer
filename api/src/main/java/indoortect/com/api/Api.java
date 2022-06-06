@@ -20,7 +20,7 @@ public class Api implements ApiImpl {
     private final FirebaseAuth auth;
     private String uid_device;
     private String uid_user;
-    private DatabaseReference playlistIdRef,conexaoRef;
+    private DatabaseReference playlistIdRef,conexaoRef,removeRef;
     private final DatabaseReference databaseReference;
     private final StorageReference storageReference;
     private StorageReference midia;
@@ -69,12 +69,25 @@ public class Api implements ApiImpl {
     }
 
     @Override
+    public RealtimeRequest removeRef() {
+        return new RealtimeRequest(removeRef);
+    }
+
+    @Override
     public void configuraApi(String uid_device, String uid_user) {
         this.uid_device = uid_device;
         this.uid_user = uid_user;
         playlistIdRef = getDatabaseReferebce();
         conexaoRef = databaseReference.child(getConexao());
+        removeRef = databaseReference.child(getRemove());
         midia = storageReference.child("usuarios").child(uid_user).child("midia");
+    }
+
+    private String getRemove() {
+        String conexao = BuildConfig.remove;
+        conexao = conexao.replaceAll(BuildConfig.uid_user,uid_user == null ? "" : uid_user);
+        conexao = conexao.replaceAll(BuildConfig.uid_device,uid_device == null ? "" : uid_device);
+        return conexao;
     }
 
     private String getConexao() {

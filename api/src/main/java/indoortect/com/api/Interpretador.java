@@ -82,6 +82,11 @@ public class Interpretador implements InterpretadorImpl {
     }
 
     @Override
+    public void deslogar() {
+        api.usuarioAuth().deslogar();
+    }
+
+    @Override
     public void configuraApi(String deviceId, String uid_user) {
         api.configuraApi(deviceId,uid_user);
     }
@@ -105,6 +110,25 @@ public class Interpretador implements InterpretadorImpl {
     @Override
     public void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver) {
         api.conexaoRef().setValue(conexao,voidObserver,exceptionObserver);
+    }
+
+    @Override
+    public void isRemove(Observer<Exception> exceptionObserver, Observer<Boolean> voidObserver) {
+        api.removeRef().findAllItems(new Action() {
+            @Override
+            protected void response(DataSnapshot dataSnapshot) {
+                Boolean remove = null;
+                if (dataSnapshot.exists()){
+                    Object obj = dataSnapshot.getValue();
+                    try {
+                        remove = Boolean.parseBoolean(String.valueOf(obj));
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+                }
+                voidObserver.observer(remove != null && remove);
+            }
+        }, exceptionObserver);
     }
 
     private List<ApiStorageItem> parseMidiasIds(DataSnapshot dataSnapshot) {

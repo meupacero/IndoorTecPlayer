@@ -40,6 +40,11 @@ public class IndoorTecApi implements ApiIndoorTec {
     }
 
     @Override
+    public void deslogar() {
+        interpretadorImpl.deslogar();
+    }
+
+    @Override
     public void configuraApi(String deviceId, String uid_user) {
         interpretadorImpl.configuraApi(deviceId,uid_user);
     }
@@ -62,5 +67,10 @@ public class IndoorTecApi implements ApiIndoorTec {
     @Override
     public void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver) {
         interpretadorImpl.enviarDados(conexao,voidObserver,exceptionObserver);
+    }
+
+    @Override
+    public void isRemove(Observer<Exception> exceptionObserver,Observer<Boolean> observer) {
+        interpretadorImpl.isRemove(exceptionObserver, observer);
     }
 }

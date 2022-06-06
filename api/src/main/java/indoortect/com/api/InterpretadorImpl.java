@@ -22,4 +22,8 @@ public interface InterpretadorImpl {
     void download(ApiStorageItem itemDownload,Observer<Boolean> observer,Observer<Exception> exceptionObserver);
 
     void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver);
+
+    void isRemove(Observer<Exception> exceptionObserver, Observer<Boolean> remove);
+
+    void deslogar();
 }

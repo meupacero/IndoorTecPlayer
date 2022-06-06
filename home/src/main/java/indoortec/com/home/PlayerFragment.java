@@ -4,6 +4,7 @@ import static android.content.Context.POWER_SERVICE;
 import static indoortec.com.entity.PlayList.VIDEO;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +72,14 @@ public class PlayerFragment extends Fragment implements Observer<Midia>, MediaPl
         DaggerHomeComponent.factory().create(requireContext()).inject(this);
         playerViewmodel = new ViewModelProvider(this,factory).get(PlayerViewmodel.class);
         playerViewmodel.midia.observe(getViewLifecycleOwner(), this);
+        playerViewmodel.usuario.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (!aBoolean) {
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(requireContext().getApplicationContext());
+                preferences.edit().putBoolean("logado", false).apply();
+                Observer<Boolean> observer = (Observer<Boolean>) requireActivity();
+                observer.onChanged(false);
+            }
+        });
     }
 
     @Override

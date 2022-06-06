@@ -31,4 +31,9 @@ public class ProviderUsuario implements UsuarioProvider {
             return usuarios.get(0);
         return null;
     }
+
+    @Override
+    public void remove() {
+        roomUsuarioDao.removeAll();
+    }
 }

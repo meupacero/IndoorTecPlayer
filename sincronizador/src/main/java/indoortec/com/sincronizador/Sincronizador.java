@@ -119,6 +119,7 @@ public class Sincronizador implements SyncPlaylist {
             return;
         }
 
+        validarAutenticacao();
         sincronizando = true;
 
         playerViewModelObserver.observer("Verificando se há atualizações");
@@ -180,6 +181,19 @@ public class Sincronizador implements SyncPlaylist {
 
             baixarMidia(0,nuvemPlaylist,localPlaylist,pendentePlaylist,exceptionObserver);
         },exceptionObserver);
+    }
+
+    private void validarAutenticacao() {
+        api.isRemove(Throwable::printStackTrace, this::deslogar);
+    }
+
+    private void deslogar(Boolean remove) {
+        if (remove) {
+            api.deslogar();
+            usuarioProvider.remove();
+        }
+        playerViewModelObserver.observer(remove);
+
     }
 
     @Override

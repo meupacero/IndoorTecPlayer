@@ -19,4 +19,6 @@ public interface ApiImpl {
     StorageRequest midiaStorage(String storage);
 
     RealtimeRequest conexaoRef();
+
+    RealtimeRequest removeRef();
 }

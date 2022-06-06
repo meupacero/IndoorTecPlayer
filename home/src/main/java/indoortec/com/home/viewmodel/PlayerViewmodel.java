@@ -173,8 +173,10 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
             this.execute = (Execute) execute;
         }else if (execute instanceof String){
             conexao.setInformacoes((String) execute);
+        } else if (execute instanceof Boolean){
+            Usuario usuario = sincronizador.usuarioLogado(deviceId);
+            _usuario.setValue(usuario != null);
         }
-
     }
 
     @Override

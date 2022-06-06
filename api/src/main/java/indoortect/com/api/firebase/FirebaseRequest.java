@@ -93,4 +93,12 @@ public class FirebaseRequest {
             }
         };
     }
+
+    public void deslogar() {
+        if (auth == null) {
+            return;
+        }
+
+        auth.signOut();
+    }
 }
