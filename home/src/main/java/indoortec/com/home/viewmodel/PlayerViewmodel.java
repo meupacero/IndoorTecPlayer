@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -27,9 +26,9 @@ import indoortec.com.entity.Conexao;
 import indoortec.com.entity.PlayList;
 import indoortec.com.entity.Usuario;
 import indoortec.com.home.model.Midia;
-import indoortec.com.synccontract.SyncPlaylist;
 import indoortec.com.observer.Execute;
 import indoortec.com.observer.Observer;
+import indoortec.com.synccontract.SyncPlaylist;
 
 @Singleton
 public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runnable {

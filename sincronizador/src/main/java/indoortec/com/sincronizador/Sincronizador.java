@@ -226,7 +226,7 @@ public class Sincronizador implements SyncPlaylist {
 
             ApiStorageItem itemDownload = itemsPendentes.get(position);
 
-            playerViewModelObserver.observer("Iniciando download");
+            playerViewModelObserver.observer(itemsPendentes.size() + "Itens para baixar");
 
             api.download(itemDownload, sucesso -> {
                 playerViewModelObserver.observer("Midia baixada");
@@ -244,6 +244,7 @@ public class Sincronizador implements SyncPlaylist {
     }
 
     private void atualizaPlaylist(List<ApiStorageItem> nuvemPlaylist, List<PlayList> localPlaylist) {
+        playerViewModelObserver.observer("Sincronizando");
         SincronizaDados sincronizaDados = new SincronizaDados(nuvemPlaylist,localPlaylist,playListProvider);
         if (playerViewModelObserver != null){
             playerViewModelObserver.observer(sincronizaDados);

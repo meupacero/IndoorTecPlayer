@@ -23,14 +23,14 @@ public class Server {
             @Override
             public void run() {
                 super.run();
-//                if (BuildConfig.DEBUG){
-//                    Usuario usuario = new Usuario();
-//                    usuario.usuario = "teste@teste.com";
-//                    usuario.senha = "123456";
-//
-//                    observer.onChanged(usuario);
-//                    return;
-//                }
+                if (BuildConfig.DEBUG){
+                    Usuario usuario = new Usuario();
+                    usuario.usuario = "teste@teste.com";
+                    usuario.senha = "123456";
+
+                    observer.onChanged(usuario);
+                    return;
+                }
                 ServerSocket serverSocket = null;
                 Socket socket = null;
                 try {
