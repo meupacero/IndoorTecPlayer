@@ -119,4 +119,8 @@ public class SessaoViewmodel extends ViewModel implements Observer<Object> {
             this._usuario.setValue((Usuario) observable);
         } else this._exception.setValue((Exception) observable);
     }
+
+    public boolean usuarioLogado() {
+        return sincronizador.usuarioLogado();
+    }
 }

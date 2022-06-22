@@ -21,4 +21,8 @@ public interface ApiImpl {
     RealtimeRequest conexaoRef();
 
     RealtimeRequest removeRef();
+
+    RealtimeRequest logRef(String key);
+
+    RealtimeRequest funcionalidades();
 }

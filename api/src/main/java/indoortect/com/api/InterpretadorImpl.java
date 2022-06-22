@@ -1,6 +1,8 @@
 package indoortect.com.api;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import indoortec.com.entity.ApiMidia;
 import indoortec.com.entity.ApiStorageItem;
@@ -26,4 +28,8 @@ public interface InterpretadorImpl {
     void isRemove(Observer<Exception> exceptionObserver, Observer<Boolean> remove);
 
     void deslogar();
+
+    void enviarLog(ArrayList<String> strings);
+
+    void funcionalidades(Observer<Map<String, Object>> observer);
 }

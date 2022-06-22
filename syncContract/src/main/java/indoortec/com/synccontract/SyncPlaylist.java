@@ -6,15 +6,16 @@ import indoortec.com.observer.Observer;
 
 public interface SyncPlaylist {
 
-    void validarPlayList(Observer<Exception> exceptionObserver);
 
     void logar(Usuario usuario,Observer<Object> viewModelObserver);
 
     void setObserver(Observer<Object> observer);
 
-    void sincronizar(Observer<Exception> exceptionObserver);
+    void sincronizar();
 
     Usuario usuarioLogado(String deviceId);
 
     void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver);
+
+    boolean usuarioLogado();
 }

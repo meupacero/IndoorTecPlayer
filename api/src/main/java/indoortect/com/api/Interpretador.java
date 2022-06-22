@@ -1,9 +1,13 @@
 package indoortect.com.api;
 
+import android.os.Handler;
+
 import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,11 +23,26 @@ import indoortec.com.observer.Observer;
 @Singleton
 public class Interpretador implements InterpretadorImpl {
     private final ApiImpl api;
+    private final List<String> strings = new ArrayList<>();
 
     @Inject
     public Interpretador(ApiImpl api) {
         this.api = api;
     }
+
+    private final Handler handler = new Handler();
+
+    private final Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            api.logRef(null).buildHash(new Action() {
+                @Override
+                protected void response(DataSnapshot dataSnapshot) {
+                    api.logRef(dataSnapshot.getKey()).setValue(strings, observable1 -> {}, Throwable::printStackTrace);
+                }
+            }, Throwable::printStackTrace);
+        }
+    };
 
     @Override
     public void sincronizar(Observer<List<ApiStorageItem>> observable, Observer<Exception> exceptionObserver){
@@ -87,6 +106,34 @@ public class Interpretador implements InterpretadorImpl {
     }
 
     @Override
+    public void enviarLog(ArrayList<String> strings) {
+        this.strings.clear();
+        this.strings.addAll(strings);
+        handler.removeCallbacks(runnable);
+        handler.postDelayed(runnable,500L);
+    }
+
+    @Override
+    public void funcionalidades(Observer<Map<String, Object>> observer) {
+        api.funcionalidades().findAllItems(new Action() {
+            @Override
+            protected void response(DataSnapshot dataSnapshot) {
+                Map<String, Object> map = new HashMap<>();
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    Object o = dataSnapshot1.getValue();
+                    if (o != null) {
+                        map.put(dataSnapshot1.getKey(), o);
+                    }
+                }
+                observer.observer(map);
+            }
+        }, observable -> {
+            observer.observer(new HashMap<>());
+            observable.printStackTrace();
+        });
+    }
+
+    @Override
     public void configuraApi(String deviceId, String uid_user) {
         api.configuraApi(deviceId,uid_user);
     }
@@ -126,9 +173,7 @@ public class Interpretador implements InterpretadorImpl {
                         exception.printStackTrace();
                     }
                 }
-                if (remove != null && remove){
-                    api.removeRef().setValue(false, observable -> voidObserver.observer(true), exceptionObserver);
-                } else voidObserver.observer(false);
+                voidObserver.observer(remove != null && remove);
             }
         }, exceptionObserver);
     }
@@ -144,27 +189,5 @@ public class Interpretador implements InterpretadorImpl {
             }
         }
         return apiStorageItem;
-    }
-
-    private boolean isaNull(String value) {
-        return value == null || value.isEmpty() || value.equals("null");
-    }
-
-    private List<PlayList> parsePlayList(DataSnapshot dataSnapshot) {
-        List<PlayList> playLists = new ArrayList<>();
-        if (dataSnapshot.exists()) {
-            int count = 0;
-
-            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                count++;
-                PlayList item = snapshot.getValue(PlayList.class);
-
-                if (item != null){
-                    item.id = count;
-                    playLists.add(item);
-                }
-            }
-        }
-        return playLists;
     }
 }

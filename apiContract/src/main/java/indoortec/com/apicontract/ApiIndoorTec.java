@@ -1,6 +1,8 @@
 package indoortec.com.apicontract;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import indoortec.com.entity.ApiMidia;
 import indoortec.com.entity.ApiStorageItem;
@@ -28,4 +30,8 @@ public interface ApiIndoorTec {
     void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver);
 
     void isRemove(Observer<Exception> exceptionObserver,Observer<Boolean> observer);
+
+    void enviarLog(ArrayList<String> strings);
+
+    void funcionalidades(Observer<Map<String, Object>> observer);
 }

@@ -1,20 +1,17 @@
 package indoortec.com.sessao;
 
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -61,7 +58,7 @@ public class SessaoFragment extends Fragment implements Observer<Object> {
         if (object instanceof Bitmap) {
             configuraBitmap((Bitmap) object);
         } else if (object instanceof Usuario) {
-            usuarioAlterado((Usuario) object);
+            checkUsuario((Usuario) object);
         } else if (object instanceof Exception){
             onErro((Exception) object);
         }
@@ -96,12 +93,6 @@ public class SessaoFragment extends Fragment implements Observer<Object> {
         getBinding().loagind.setVisibility(loadingVisible);
     }
 
-    private void usuarioAlterado(Usuario usuario) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(requireContext().getApplicationContext());
-        preferences.edit().putBoolean("logado", usuario.account_uid != null && !usuario.account_uid.isEmpty()).apply();
-        checkUsuario(usuario);
-    }
-
     private void checkUsuario(Usuario usuario) {
         if (usuario.account_uid == null || usuario.account_uid.isEmpty())
             logar(usuario);
@@ -109,8 +100,7 @@ public class SessaoFragment extends Fragment implements Observer<Object> {
     }
 
     private void verificaUsuarioLogado() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(requireContext().getApplicationContext());
-        boolean usuarioLogado = preferences.getBoolean("logado",false);
+        boolean usuarioLogado = sessaoViewmodel.usuarioLogado();
         if (usuarioLogado) {
             Observer<Boolean> observer = (Observer<Boolean>) requireActivity();
             observer.onChanged(true);

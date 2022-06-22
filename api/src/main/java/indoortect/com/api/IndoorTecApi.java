@@ -2,6 +2,7 @@ package indoortect.com.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -72,5 +73,15 @@ public class IndoorTecApi implements ApiIndoorTec {
     @Override
     public void isRemove(Observer<Exception> exceptionObserver,Observer<Boolean> observer) {
         interpretadorImpl.isRemove(exceptionObserver, observer);
+    }
+
+    @Override
+    public void enviarLog(ArrayList<String> strings) {
+        interpretadorImpl.enviarLog(strings);
+    }
+
+    @Override
+    public void funcionalidades(Observer<Map<String, Object>> observer) {
+        interpretadorImpl.funcionalidades(observer);
     }
 }

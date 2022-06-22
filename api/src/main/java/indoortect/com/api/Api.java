@@ -20,7 +20,7 @@ public class Api implements ApiImpl {
     private final FirebaseAuth auth;
     private String uid_device;
     private String uid_user;
-    private DatabaseReference playlistIdRef,conexaoRef,removeRef;
+    private DatabaseReference playlistIdRef,conexaoRef,removeRef,logRef;
     private final DatabaseReference databaseReference;
     private final StorageReference storageReference;
     private StorageReference midia;
@@ -74,12 +74,24 @@ public class Api implements ApiImpl {
     }
 
     @Override
+    public RealtimeRequest logRef(String key) {
+        DatabaseReference reference = key == null ? logRef : logRef.child(key);
+        return new RealtimeRequest(reference);
+    }
+
+    @Override
+    public RealtimeRequest funcionalidades() {
+        return new RealtimeRequest(databaseReference.child("funcionalidades"));
+    }
+
+    @Override
     public void configuraApi(String uid_device, String uid_user) {
         this.uid_device = uid_device;
         this.uid_user = uid_user;
         playlistIdRef = getDatabaseReferebce();
         conexaoRef = databaseReference.child(getConexao());
         removeRef = databaseReference.child(getRemove());
+        logRef = databaseReference.child(getLogRef());
         midia = storageReference.child("usuarios").child(uid_user).child("midia");
     }
 
@@ -92,6 +104,13 @@ public class Api implements ApiImpl {
 
     private String getConexao() {
         String conexao = BuildConfig.conexao;
+        conexao = conexao.replaceAll(BuildConfig.uid_user,uid_user == null ? "" : uid_user);
+        conexao = conexao.replaceAll(BuildConfig.uid_device,uid_device == null ? "" : uid_device);
+        return conexao;
+    }
+
+    private String getLogRef() {
+        String conexao = BuildConfig.log;
         conexao = conexao.replaceAll(BuildConfig.uid_user,uid_user == null ? "" : uid_user);
         conexao = conexao.replaceAll(BuildConfig.uid_device,uid_device == null ? "" : uid_device);
         return conexao;

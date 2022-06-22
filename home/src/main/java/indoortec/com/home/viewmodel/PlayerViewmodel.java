@@ -70,12 +70,11 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
         if (usuario != null){
             _playlist.clear();
             _playlist.addAll(playlistController.fetchAll());
-            sincronizador.sincronizar(this::observer);
+            sincronizador.sincronizar();
             play();
             enviaDados();
         }
     }
-
 
     private final Runnable sendData = new Runnable() {
         @Override
@@ -88,7 +87,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
 
     private void enviaDados() {
         handler.removeCallbacks(sendData);
-        handler.postDelayed(sendData,5000L);
+        handler.postDelayed(sendData, 1000L);
     }
 
     private void play() {
@@ -104,8 +103,6 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
                     execute = null;
 
                     play();
-
-                    sincronizador.validarPlayList(this::observer);
                 });
             }
             return;
@@ -154,7 +151,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
     }
 
     private void pararReproducao() {
-        conexao.setInformacoes("Fim da reprodução");
+        conexao.setInformacoes("Não reproduzindo");
         tocando = false;
     }
 

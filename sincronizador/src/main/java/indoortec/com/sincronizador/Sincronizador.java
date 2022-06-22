@@ -1,11 +1,15 @@
 package indoortec.com.sincronizador;
 
 import android.annotation.SuppressLint;
+import android.os.Environment;
 import android.os.Handler;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -23,28 +27,24 @@ import indoortec.com.synccontract.SyncPlaylist;
 @SuppressLint("StaticFieldLeak")
 @Singleton
 public class Sincronizador implements SyncPlaylist {
-    public static final long INTERVALO_ENTRE_SINCRONIZACAO = 10;
-    private final ApiIndoorTec api;
-    private boolean sincronizando,revizao;
-    private final PlayListProvider playListProvider;
+    public static int DELAY_SYNC = 10;
+    public static int DELAY_FUNCION = 10;
+    public static boolean ENVIA_LOGS = false;
+    private ApiIndoorTec api;
+    private final PlayListProvider provider;
     private final UsuarioProvider usuarioProvider;
-    private final StorageReference storageReference;
     private final Handler handler = new Handler();
-    private final Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            sincronizar(observable -> playerViewModelObserver.observer(observable));
-        }
-    };
-    private final String TAG = getClass().getName();
+
     private Observer<Object> playerViewModelObserver;
+    private final List<String> logs = new ArrayList<>();
+    private int DELAY_CONEXAO = 5;
+    private final List<ApiStorageItem> pendencias = new ArrayList<>();
 
     @Inject
-    public Sincronizador(ApiIndoorTec api, PlayListProvider playListProvider, UsuarioProvider usuarioProvider) {
+    public Sincronizador(ApiIndoorTec api, PlayListProvider provider, UsuarioProvider usuarioProvider) {
         this.api = api;
-        this.playListProvider = playListProvider;
+        this.provider = provider;
         this.usuarioProvider = usuarioProvider;
-        storageReference = FirebaseStorage.getInstance().getReference();
     }
 
     @Override
@@ -62,88 +62,44 @@ public class Sincronizador implements SyncPlaylist {
     }
 
     @Override
+    public boolean usuarioLogado() {
+        return usuarioProvider.usuarioLogado() != null;
+    }
+
+    @Override
     public void setObserver(Observer<Object> observer) {
         this.playerViewModelObserver = observer;
     }
 
-    @Override
-    public void validarPlayList(Observer<Exception> exceptionObserver) {
+    private final Runnable runnable = this::sincronizar;
 
-        Log.d(TAG,"INICIANDO VALIDAÇÃO DA LISTA DE REPRODUÇÃO");
-
-        api.sincronizar(observable -> {
-            observable = validarPlayList(observable);
-
-            List<PlayList> playListsLocal = playListProvider.fetchAll();
-
-            Log.d(TAG,"COMPARANDO LISTA DE REPRODUÇÃO COM SERVIDOR");
-
-            if (observable.size() != playListsLocal.size()) {
-                revizao = true;
-            } else if (observable.size() > 0) {
-                for (int x = 0; x < observable.size(); x++){
-                    PlayList local = playListsLocal.get(x);
-                    ApiStorageItem nuvem = observable.get(x);
-                    if (!local.storage.equals(nuvem.getStorage())){
-                        revizao = true;
-                        break;
-                    }
-                }
-            }
-
-            sincronizando = false;
-
-            if (revizao) {
-                Log.d(TAG,"POSSIVEIS DADOS NÃO COLETADOS. FAZENDO REVIZÃO");
-
-                revizao = false;
-                sincronizar(exceptionObserver);
-            } else sincronizado(exceptionObserver);
-        },exceptionObserver);
-    }
-
-    private void sincronizado(Observer<Exception> exceptionObserver) {
-        Log.d(TAG,"------------VALIDAÇÃO CONCLUIDA--------------");
-
-        api.removerMidiasCorrompidas(exceptionObserver);
-
+    private void sync() {
         handler.removeCallbacks(runnable);
-        handler.postDelayed(runnable,1000L * INTERVALO_ENTRE_SINCRONIZACAO);
+        handler.postDelayed(runnable,DELAY_SYNC * 1000L);
     }
 
-    public void sincronizar(Observer<Exception> exceptionObserver) {
-        if (sincronizando) {
-            revizao = true;
-
-            Log.d(TAG,"JA EXISTE UMA SINCRONIZAÇÃO EM ANDAMENTE, AO FINAL SERA FEITO UMA REVIZÃO");
-            return;
-        }
-
+    public void sincronizar() {
+        sync();
+        List<String> log = new ArrayList<>(logs);
+        logs.clear();
+        enviarLogs(new ArrayList<>(log));
         validarAutenticacao();
-        sincronizando = true;
-
-        playerViewModelObserver.observer("Verificando se há atualizações");
+        logs.add("Verificando se há atualizações");
 
         api.sincronizar(nuvemPlaylist -> {
             nuvemPlaylist = validarPlayList(nuvemPlaylist);
 
-            if (nuvemPlaylist.size() == 0){
-                playerViewModelObserver.observer("A playlist não está configurada");
-                limpaPlaylist();
-                return;
-            }
-
-            List<PlayList> localPlaylist = playListProvider.fetchAll();
+            List<PlayList> localPlaylist = provider.fetchAll();
 
             List<ApiStorageItem> midiasDownload = new ArrayList<>();
 
-            for (int x = 0; x < nuvemPlaylist.size(); x ++){
+            for (int x = 0; x < nuvemPlaylist.size(); x++) {
 
                 ApiStorageItem nuvemMidia = nuvemPlaylist.get(x);
 
                 boolean baixar = true;
 
-                for (int y = 0; y < localPlaylist.size(); y ++){
+                for (int y = 0; y < localPlaylist.size(); y++) {
 
                     PlayList localMidia = localPlaylist.get(y);
 
@@ -163,7 +119,7 @@ public class Sincronizador implements SyncPlaylist {
 
                 boolean download = true;
 
-                for (PlayList localMidia : localPlaylist){
+                for (PlayList localMidia : localPlaylist) {
 
                     if (localMidia.storage.equals(nuvemMidia.getStorage())) {
 
@@ -177,10 +133,19 @@ public class Sincronizador implements SyncPlaylist {
                     pendentePlaylist.add(nuvemMidia);
             }
 
-            playerViewModelObserver.observer(pendentePlaylist.size() == 0 ? "A playlist está atualizada" : "Iniciando sincronização de midias");
+            logs.add(pendentePlaylist.size() == 0 ? "Nenhum item para baixar" : "Iniciando download de midias");
 
-            baixarMidia(0,nuvemPlaylist,localPlaylist,pendentePlaylist,exceptionObserver);
-        },exceptionObserver);
+            pendencias.clear();
+            pendencias.addAll(pendentePlaylist);
+
+            baixarMidia(0, nuvemPlaylist, localPlaylist);
+        }, observable -> playerViewModelObserver.observer(observable));
+    }
+
+    private void enviarLogs(ArrayList<String> strings) {
+        if (ENVIA_LOGS) {
+            api.enviarLog(strings);
+        }
     }
 
     private void validarAutenticacao() {
@@ -193,7 +158,6 @@ public class Sincronizador implements SyncPlaylist {
             usuarioProvider.remove();
         }
         playerViewModelObserver.observer(remove);
-
     }
 
     @Override
@@ -202,59 +166,139 @@ public class Sincronizador implements SyncPlaylist {
         if (usuario != null){
             String uid_user = usuario.account_uid;
             api.configuraApi(deviceId,uid_user);
+            baixarFuncionalidades();
         }
         return usuarioProvider.usuarioLogado();
     }
 
-    @Override
-    public void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver) {
-        api.enviarDados(conexao,voidObserver,exceptionObserver);
+    private final Runnable runnableFuncionalidades = () -> {
+        api.funcionalidades(observable -> {
+            try {
+                Object obj = observable.get("enviarlogs");
+                ENVIA_LOGS = Boolean.parseBoolean(String.valueOf(obj));
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            try {
+                Object obj = observable.get("delay_sincronizacao_funcoes");
+                DELAY_FUNCION = Integer.parseInt(String.valueOf(obj));
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            try {
+                Object obj = observable.get("delay_sincronizacao");
+                DELAY_SYNC = Integer.parseInt(String.valueOf(obj));
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            try {
+                Object obj = observable.get("delay_conexao");
+                DELAY_CONEXAO = Integer.parseInt(String.valueOf(obj));
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            baixarFuncionalidades();
+        });
+    };
+    private void baixarFuncionalidades() {
+        handler.removeCallbacks(runnableFuncionalidades);
+        handler.postDelayed(runnableFuncionalidades, DELAY_FUNCION * 1000L);
     }
 
-    private void baixarMidia(int position, List<ApiStorageItem> itemsServidor, List<PlayList> itemsLocal, List<ApiStorageItem> itemsPendentes, Observer<Exception> exceptionObserver) {
-        if (revizao) {
-            revizao = false;
-            sincronizando = false;
+    @Override
+    public void enviarDados(Conexao conexao, Observer<Boolean> voidObserver, Observer<Exception> exceptionObserver) {
+        new Handler().postDelayed(() -> api.enviarDados(conexao,voidObserver,exceptionObserver),DELAY_CONEXAO * 1000L);
+    }
 
-            playerViewModelObserver.observer("Realizando revizção");
+    private void baixarMidia(int position, List<ApiStorageItem> itemsServidor, List<PlayList> itemsLocal) {
+        if (position < pendencias.size()) {
+            logs.add("Preparando para baixar item. Restam : "+pendencias.size());
 
-            sincronizar(exceptionObserver);
-            return;
-        }
+            ApiStorageItem itemDownload = pendencias.get(position);
 
-        if (position < itemsPendentes.size()) {
+            String storage = itemDownload.getStorage();
+            String extensao = storage.substring(storage.lastIndexOf("."));
 
-            ApiStorageItem itemDownload = itemsPendentes.get(position);
+            itemDownload.nomeTemporario = System.currentTimeMillis() + extensao;
 
-            playerViewModelObserver.observer(itemsPendentes.size() + "Itens para baixar");
+            playerViewModelObserver.observer(pendencias.size() + "Itens para baixar");
+
+            playerViewModelObserver.observer("Iniciando download. "+pendencias.size() + "Itens restante");
 
             api.download(itemDownload, sucesso -> {
-                playerViewModelObserver.observer("Midia baixada");
-                atualizaPlaylist(itemsServidor,itemsLocal);
-                sincronizando = false;
-                sincronizar(exceptionObserver);
+                logs.add("Midia baixada:"+itemDownload.getStorage());
+
+                playerViewModelObserver.observer("Download de midia concluido");
+
+                if (pendencias.contains(itemDownload)) {
+                    moverParaPastaPlaylist(itemDownload);
+                    atualizaPlaylist(itemsServidor,itemsLocal);
+                } else renomear(itemDownload);
             }, exception -> {
-                playerViewModelObserver.observer("Erro ao baixar midia");
+                logs.add("Erro ao baixar midia:"+itemDownload.getStorage()+"\n"+exception.getMessage());
+                playerViewModelObserver.observer("logs.add(\"Midia baixada:\"+itemDownload.getStorage());");
                 exception.printStackTrace();
-                sincronizando = false;
-                sincronizar(exceptionObserver);
+                if (pendencias.contains(itemDownload)) {
+                    baixarMidia(position + 1,itemsServidor,itemsLocal);
+                }
             });
 
         } else atualizaPlaylist(itemsServidor,itemsLocal);
     }
 
-    private void atualizaPlaylist(List<ApiStorageItem> nuvemPlaylist, List<PlayList> localPlaylist) {
-        playerViewModelObserver.observer("Sincronizando");
-        SincronizaDados sincronizaDados = new SincronizaDados(nuvemPlaylist,localPlaylist,playListProvider);
-        if (playerViewModelObserver != null){
-            playerViewModelObserver.observer(sincronizaDados);
-        }
+    private void renomear(ApiStorageItem itemDownload) {
+        File pendencias = getPendenciasFile();
+        File pendente = new File(pendencias, itemDownload.nomeTemporario);
+        File baixado = new File(pendencias, itemDownload.getStorage());
+        pendente.renameTo(baixado);
     }
 
-    private void limpaPlaylist() {
-        LimpaMidias limpaMidias = new LimpaMidias(playListProvider);
+    @NonNull
+    private File getPendenciasFile() {
+        File root = new File(Environment.getExternalStorageDirectory(),"indoortec");
+
+        if (!root.exists()){
+            root.mkdir();
+            root.mkdirs();
+        }
+
+        File pendencias = new File(root,"pendencias");
+
+        if (!pendencias.exists()){
+            pendencias.mkdir();
+            pendencias.mkdirs();
+        }
+        return pendencias;
+    }
+
+    private File getPlaylistFile() {
+        File root = new File(Environment.getExternalStorageDirectory(),"indoortec");
+        File playlist = new File(root,"playlist");
+
+        if (!playlist.exists()){
+            playlist.mkdir();
+            playlist.mkdirs();
+        }
+        return playlist;
+    }
+
+    private void moverParaPastaPlaylist(ApiStorageItem itemDownload) {
+        File pendencias = getPendenciasFile();
+        File playlist = getPlaylistFile();
+
+        logs.add("Movendo midias : " + itemDownload.getStorage() + " para pasta de playlist");
+
+        File pendente = new File(pendencias, itemDownload.nomeTemporario);
+
+        File reproduzir = new File(playlist, itemDownload.getStorage());
+
+        pendente.renameTo(reproduzir);
+    }
+
+    private void atualizaPlaylist(List<ApiStorageItem> nuvemPlaylist, List<PlayList> localPlaylist) {
+        SincronizaDados sincronizaDados = new SincronizaDados(nuvemPlaylist,localPlaylist, provider,logs);
         if (playerViewModelObserver != null){
-            playerViewModelObserver.observer(limpaMidias);
+            playerViewModelObserver.observer(sincronizaDados);
         }
     }
 
@@ -267,5 +311,4 @@ public class Sincronizador implements SyncPlaylist {
         }
         return pendentes;
     }
-
 }

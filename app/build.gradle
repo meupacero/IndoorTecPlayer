@@ -42,6 +42,8 @@ dependencies {
     implementation project(path: ':sincronizador')
     implementation project(path: ':syncContract')
 
+    implementation deps.firebase
+
     implementation deps.androidx.appcompat
     implementation deps.androidx.material
     implementation deps.androidx.constraintlayout

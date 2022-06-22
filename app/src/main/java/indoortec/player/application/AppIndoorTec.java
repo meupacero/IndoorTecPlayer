@@ -3,6 +3,8 @@ package indoortec.player.application;
 
 import android.app.Application;
 
+import androidx.fragment.app.FragmentActivity;
+
 import indoortec.com.apicontract.ApiDeps;
 import indoortec.com.appdeps.HasAppDeps;
 import indoortec.com.controllercontract.ControllerDeps;

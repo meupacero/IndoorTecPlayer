@@ -33,26 +33,26 @@ public class StorageRequest {
             rootFile.mkdirs();
         }
 
-        String storage = itemDownload.getStorage();
-        File midiaFile = new File(rootFile,storage);
+        String nomeTemporario = itemDownload.nomeTemporario;
 
-        if (isaNull(storage)){
-            exceptionObserver.observer(new Exception("ITEM INCOMPLETO : " + storage + " PULANDO DOWNLOAD"));
+        File midiaFile = new File(rootFile,nomeTemporario);
+
+        if (isaNull(itemDownload.getStorage())){
+            exceptionObserver.observer(new Exception("ITEM INCOMPLETO : " + nomeTemporario + " PULANDO DOWNLOAD"));
             return;
         }
-
-        if (midiaFile.exists() && midiaFile.length() == Integer.parseInt(itemDownload.getSize())) {
+        if (new File(rootFile,itemDownload.getStorage()).exists() && new File(rootFile,itemDownload.getStorage()).length() == Integer.parseInt(itemDownload.getSize())) {
             sucesso.observer(true);
-        } else if (IndoorTecApi.nao_existe.contains(storage)){
+        } else if (IndoorTecApi.nao_existe.contains(itemDownload.getStorage())){
             exceptionObserver.observer(new Exception("ESTA MIDIA NÃO EXISTE NO STORAGE"));
-        }else {
+        } else {
             storageReference.getFile(midiaFile).addOnSuccessListener(taskSnapshot -> {
                 sucesso.observer(true);
             }).addOnFailureListener(e -> {
                 e.printStackTrace();
 
                 if (e.getMessage() != null && e.getMessage().contains("Object does not exist at location")){
-                    IndoorTecApi.nao_existe.add(storage);
+                    IndoorTecApi.nao_existe.add(itemDownload.getStorage());
                     sucesso.observer(false);
                 }
 

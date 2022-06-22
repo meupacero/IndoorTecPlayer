@@ -4,6 +4,7 @@ public class ApiStorageItem {
     private String size;
     private String storage;
     private String tipo;
+    public String nomeTemporario;
 
     public ApiStorageItem() {
     }
