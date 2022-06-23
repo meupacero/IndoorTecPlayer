@@ -1,10 +1,19 @@
 package indoortec.player;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.TypedValue;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -52,7 +61,14 @@ public class MainActivity extends AppCompatActivity implements androidx.lifecycl
         if (actionBar != null){
             actionBar.hide();
         }
-        onChanged(false);
+    }
+
+    private void inicializar() {
+        if (Build.VERSION.SDK_INT < 23 || PermissionUtils.checkPermissions(KEY.PERMISSIONS).size() == 0) {
+            onChanged(false);
+        } else {
+            startActivity(new Intent(this, CheckPermissionActivity.class));
+        }
     }
 
     @Override
@@ -66,8 +82,43 @@ public class MainActivity extends AppCompatActivity implements androidx.lifecycl
     protected void onStart() {
         super.onStart();
         App.getInstance().activityVisivel();
+
         if (App.getInstance().autoStartNaoIniciado()) {
             AutoStartService.init(this);
+        }
+
+        inicializar();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        overlayPermission();
+    }
+
+    private void overlayPermission() {
+        if (Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(this)) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Permissão de sobreposição")
+                    .setCancelable(false)
+                    .setMessage("Este aplicativo precisa dessa permissão de sobreposição para funcionar corretamente. Permita esta permissão na configuração do dispositivo")
+                    .setPositiveButton("Confirmar", (dialogInterface, i) -> {
+                        try {
+                            MainActivity.this.startActivityForResult(new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION",
+                                    Uri.parse("package:" + MainActivity.this.getPackageName())), 123);
+                        } catch (Exception unused) {
+                            Toast.makeText(MainActivity.this.getApplicationContext(), "A permissão não concedida pelo usuário", Toast.LENGTH_LONG).show();
+                        }
+                    }).setNegativeButton("Cancelar", (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
+                    }).show();
+        }
+    }
+
+    public void onActivityResult(int i, int i2, Intent intent) {
+        super.onActivityResult(i, i2, intent);
+        if (i == 123 && Build.VERSION.SDK_INT >= 23 && !Settings.canDrawOverlays(this)) {
+            overlayPermission();
         }
     }
 

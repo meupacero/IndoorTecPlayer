@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/rlRoot"
+        android:gravity="center">
+        <ImageView
+            android:layout_height="70dp"
+            android:layout_width="70dp"
+            android:id="@+id/ivWarning"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_warning"
+            android:layout_marginBottom="10dp"/>
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ivWarning"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="A aplicação não pode trabalhar sem permissão"
+            android:textStyle="bold" />
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/tvMessage"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/tvTitle"
+            android:padding="10dp"/>
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_below="@+id/tvMessage"
+            android:layout_marginTop="3dp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnGainPermission"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Conceder permissão" />
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>
