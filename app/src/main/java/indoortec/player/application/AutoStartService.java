@@ -6,10 +6,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
 
 import java.util.Calendar;
 import java.util.concurrent.Executors;
@@ -19,15 +17,24 @@ import java.util.concurrent.TimeUnit;
 import indoortec.player.MainActivity;
 
 public class AutoStartService extends Service {
-    private static final int FREQUENCIA = 5;
+    private static final int FREQUENCIA = 60;
     private ScheduledExecutorService scheduler;
 
     @Override
-    public IBinder onBind(Intent intent) {return null;}
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
+    }
+
+    public static void init(Context context) {
+        Intent intent1 = new Intent(context,AutoStartService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent1);
+        } else context.startService(intent1);
     }
 
     @Override
@@ -54,7 +61,7 @@ public class AutoStartService extends Service {
     public void onTaskRemoved(Intent rootIntent) {
         AlarmManager alarmManager = ((AlarmManager) getSystemService(Context.ALARM_SERVICE));
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis() + 10000);
+        calendar.setTimeInMillis(System.currentTimeMillis() + (FREQUENCIA * 1000L));
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), PendingIntent.getService(getApplicationContext(), 0, new Intent(getApplicationContext(), AutoStartService.class), 0));
         if (scheduler != null) scheduler.shutdown();
         super.onTaskRemoved(rootIntent);

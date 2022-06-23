@@ -1,7 +1,6 @@
 package indoortec.player;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -67,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements androidx.lifecycl
     protected void onStart() {
         super.onStart();
         App.getInstance().activityVisivel();
-        if (App.getInstance().autoStartNaoIniciado()){
-            startService(new Intent(this, AutoStartService.class));
+        if (App.getInstance().autoStartNaoIniciado()) {
+            AutoStartService.init(this);
         }
     }
 
