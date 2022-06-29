@@ -63,6 +63,7 @@ public class Sincronizador implements SyncPlaylist {
 
     @Override
     public boolean usuarioLogado() {
+        logs.add("usuarioLogado()");
         return usuarioProvider.usuarioLogado() != null;
     }
 
@@ -74,11 +75,13 @@ public class Sincronizador implements SyncPlaylist {
     private final Runnable runnable = this::sincronizar;
 
     private void sync() {
+        logs.add("sync()");
         handler.removeCallbacks(runnable);
         handler.postDelayed(runnable,DELAY_SYNC * 1000L);
     }
 
     public void sincronizar() {
+        logs.add("sincronizar()");
         sync();
         List<String> log = new ArrayList<>(logs);
         logs.clear();
@@ -87,15 +90,18 @@ public class Sincronizador implements SyncPlaylist {
         logs.add("Verificando se há atualizações");
 
         api.sincronizar(nuvemPlaylist -> {
+            logs.add("nuvemPlaylist ->");
             nuvemPlaylist = validarPlayList(nuvemPlaylist);
 
             List<PlayList> localPlaylist = provider.fetchAll();
 
+            logs.add("localPlaylist");
+
             List<ApiStorageItem> midiasDownload = new ArrayList<>();
 
             for (int x = 0; x < nuvemPlaylist.size(); x++) {
-
                 ApiStorageItem nuvemMidia = nuvemPlaylist.get(x);
+                logs.add("nuvemPlaylist "+x+" : "+nuvemMidia.getStorage());
 
                 boolean baixar = true;
 
@@ -112,6 +118,13 @@ public class Sincronizador implements SyncPlaylist {
                 if (baixar)
                     midiasDownload.add(nuvemMidia);
             }
+
+            logs.add("--------------------------------------------");
+
+            for (PlayList playList : localPlaylist)
+                logs.add("localPlaylist :" + playList.getStorage());
+
+            logs.add("--------------------------------------------");
 
             List<ApiStorageItem> pendentePlaylist = new ArrayList<>();
 
@@ -221,6 +234,8 @@ public class Sincronizador implements SyncPlaylist {
 
             itemDownload.nomeTemporario = System.currentTimeMillis() + extensao;
 
+            logs.add("nomeTemporario:"+itemDownload.nomeTemporario);
+
             playerViewModelObserver.observer(pendencias.size() + "Itens para baixar");
 
             playerViewModelObserver.observer("Iniciando download. "+pendencias.size() + "Itens restante");
@@ -247,10 +262,13 @@ public class Sincronizador implements SyncPlaylist {
     }
 
     private void renomear(ApiStorageItem itemDownload) {
+        logs.add("renomear()");
         File pendencias = getPendenciasFile();
         File pendente = new File(pendencias, itemDownload.nomeTemporario);
         File baixado = new File(pendencias, itemDownload.getStorage());
         pendente.renameTo(baixado);
+        logs.add("Sucesso:"+pendente.exists());
+        logs.add("---------------------------------");
     }
 
     @NonNull
@@ -283,6 +301,7 @@ public class Sincronizador implements SyncPlaylist {
     }
 
     private void moverParaPastaPlaylist(ApiStorageItem itemDownload) {
+        logs.add("moverParaPastaPlaylist()");
         File pendencias = getPendenciasFile();
         File playlist = getPlaylistFile();
 
@@ -290,12 +309,42 @@ public class Sincronizador implements SyncPlaylist {
 
         File pendente = new File(pendencias, itemDownload.nomeTemporario);
 
-        File reproduzir = new File(playlist, itemDownload.getStorage());
+        if (!pendente.exists()){
+            logs.add("A midia não foi salva como nome temporario");
+            pendente = new File(pendencias, itemDownload.getStorage());
+        } else {
+            logs.add("A midia foi salva como nome temporario:"+itemDownload.nomeTemporario);
+            String fileSize = String.valueOf(pendente.length());
 
-        pendente.renameTo(reproduzir);
+            if (fileSize.equals(itemDownload.getSize())) {
+                File reproduzir = new File(playlist, itemDownload.getStorage());
+
+                pendente.renameTo(reproduzir);
+                logs.add("Sucesso:"+reproduzir.exists());
+                logs.add("------------------------------");
+            }
+            return;
+        }
+
+        if (!pendente.exists()){
+            logs.add("A midia não foi salva com sucesso");
+            logs.add("Sucesso:"+false);
+            logs.add("------------------------------");
+        } else {
+            String fileSize = String.valueOf(pendente.length());
+
+            if (fileSize.equals(itemDownload.getSize())) {
+                File reproduzir = new File(playlist, itemDownload.getStorage());
+
+                pendente.renameTo(reproduzir);
+                logs.add("Sucesso:"+reproduzir.exists());
+                logs.add("------------------------------");
+            }
+        }
     }
 
     private void atualizaPlaylist(List<ApiStorageItem> nuvemPlaylist, List<PlayList> localPlaylist) {
+        logs.add("atualizaPlaylist() nuvemPlaylist-> "+nuvemPlaylist.size()+"|localPlaylist->"+localPlaylist.size());
         SincronizaDados sincronizaDados = new SincronizaDados(nuvemPlaylist,localPlaylist, provider,logs);
         if (playerViewModelObserver != null){
             playerViewModelObserver.observer(sincronizaDados);
@@ -309,6 +358,7 @@ public class Sincronizador implements SyncPlaylist {
             if (api.existe(playList.getStorage()))
                 pendentes.add(playList);
         }
+        logs.add("validarPlayList -> pendentes");
         return pendentes;
     }
 }

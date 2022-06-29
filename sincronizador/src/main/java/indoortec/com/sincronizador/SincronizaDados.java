@@ -27,6 +27,7 @@ public class SincronizaDados implements Execute {
 
     @Override
     public void execute(Observer<List<PlayList>> observer) {
+        logs.add("execute()");
         File root = new File(Environment.getExternalStorageDirectory(),"indoortec");
 
         if (!root.exists()){
@@ -53,6 +54,7 @@ public class SincronizaDados implements Execute {
         logs.add("Itens local : "+localPlaylist.size());
 
         for (PlayList midiaLocal : localPlaylist) {
+            logs.add("Verificando se midia local:"+midiaLocal.storage+" existe no servidor");
 
             boolean existe = false;
 
@@ -63,6 +65,8 @@ public class SincronizaDados implements Execute {
                     break;
                 }
             }
+
+            logs.add("Existe : "+existe);
 
             if (!existe)
                 removerMidiaLocal(midiaLocal,playlist);
@@ -77,6 +81,8 @@ public class SincronizaDados implements Execute {
 
             String fileSize = String.valueOf(file.length());
 
+            logs.add("Verificando se midia : "+midiaNuvem.getStorage() + " esta com o tamanho correto");
+
             if (fileSize.equals(midiaNuvem.getSize())) {
                 PlayList playListItem = new PlayList();
                 countId++;
@@ -86,6 +92,9 @@ public class SincronizaDados implements Execute {
                 playListItem.tamanho = midiaNuvem.getSize();
                 playLists.add(playListItem);
             }
+
+            logs.add("Correto? : "+fileSize.equals(midiaNuvem.getSize()));
+            logs.add("-------------------------");
         }
 
         providerPlaylist.removeAll();
@@ -95,7 +104,10 @@ public class SincronizaDados implements Execute {
     }
 
     private void removerMidiaLocal(PlayList midiaLocal,File playlist) {
+        logs.add("removerMidiaLocal");
         File file = new File(playlist,midiaLocal.storage);
         file.delete();
+        logs.add("sucesso?"+!file.exists());
+        logs.add("-------------------------");
     }
 }
