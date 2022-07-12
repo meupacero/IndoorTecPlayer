@@ -184,35 +184,34 @@ public class Sincronizador implements SyncPlaylist {
         return usuarioProvider.usuarioLogado();
     }
 
-    private final Runnable runnableFuncionalidades = () -> {
-        api.funcionalidades(observable -> {
-            try {
-                Object obj = observable.get("enviarlogs");
-                ENVIA_LOGS = Boolean.parseBoolean(String.valueOf(obj));
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-            try {
-                Object obj = observable.get("delay_sincronizacao_funcoes");
-                DELAY_FUNCION = Integer.parseInt(String.valueOf(obj));
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-            try {
-                Object obj = observable.get("delay_sincronizacao");
-                DELAY_SYNC = Integer.parseInt(String.valueOf(obj));
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-            try {
-                Object obj = observable.get("delay_conexao");
-                DELAY_CONEXAO = Integer.parseInt(String.valueOf(obj));
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-            baixarFuncionalidades();
-        });
-    };
+    private final Runnable runnableFuncionalidades = () -> api.funcionalidades(observable -> {
+        try {
+            Object obj = observable.get("enviarlogs");
+            ENVIA_LOGS = Boolean.parseBoolean(String.valueOf(obj));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        try {
+            Object obj = observable.get("delay_sincronizacao_funcoes");
+            DELAY_FUNCION = Integer.parseInt(String.valueOf(obj));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        try {
+            Object obj = observable.get("delay_sincronizacao");
+            DELAY_SYNC = Integer.parseInt(String.valueOf(obj));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        try {
+            Object obj = observable.get("delay_conexao");
+            DELAY_CONEXAO = Integer.parseInt(String.valueOf(obj));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        baixarFuncionalidades();
+    });
+
     private void baixarFuncionalidades() {
         handler.removeCallbacks(runnableFuncionalidades);
         handler.postDelayed(runnableFuncionalidades, DELAY_FUNCION * 1000L);

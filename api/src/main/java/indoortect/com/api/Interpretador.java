@@ -180,10 +180,14 @@ public class Interpretador implements InterpretadorImpl {
 
     private List<ApiStorageItem> parseMidiasIds(DataSnapshot dataSnapshot) {
         List<ApiStorageItem> apiStorageItem = new ArrayList<>();
+
         if (dataSnapshot.exists()) {
+
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
                 ApiStorageItem item = snapshot.getValue(ApiStorageItem.class);
-                if (item != null){
+
+                if (item != null && !item.getQuebraRegra().contains(api.getDeviceId())){
                     apiStorageItem.add(item);
                 }
             }

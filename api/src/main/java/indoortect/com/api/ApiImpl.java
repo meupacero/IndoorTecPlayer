@@ -25,4 +25,6 @@ public interface ApiImpl {
     RealtimeRequest logRef(String key);
 
     RealtimeRequest funcionalidades();
+
+    String getDeviceId();
 }

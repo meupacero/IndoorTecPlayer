@@ -85,6 +85,11 @@ public class Api implements ApiImpl {
     }
 
     @Override
+    public String getDeviceId() {
+        return uid_device;
+    }
+
+    @Override
     public void configuraApi(String uid_device, String uid_user) {
         this.uid_device = uid_device;
         this.uid_user = uid_user;
