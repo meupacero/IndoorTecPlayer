@@ -4,13 +4,13 @@ import static android.content.Context.POWER_SERVICE;
 import static indoortec.com.entity.PlayList.VIDEO;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -78,6 +78,14 @@ public class PlayerFragment extends Fragment implements Observer<Midia>, MediaPl
                 preferences.edit().putBoolean("logado", false).apply();
                 Observer<Boolean> observer = (Observer<Boolean>) requireActivity();
                 observer.onChanged(false);
+            }
+        });
+        playerViewmodel._reset.observe(getViewLifecycleOwner(), aBoolean -> {
+            if (aBoolean){
+                Intent intent = new Intent(requireActivity(), requireActivity().getClass());
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                requireActivity().startActivity(intent);
             }
         });
     }

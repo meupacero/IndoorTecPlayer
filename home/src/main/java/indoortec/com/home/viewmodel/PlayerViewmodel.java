@@ -2,8 +2,10 @@ package indoortec.com.home.viewmodel;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 
 import androidx.annotation.NonNull;
@@ -17,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -52,6 +55,8 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
     private final Conexao conexao = new Conexao();
     @SuppressLint("SimpleDateFormat")
     private static final DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    private final SharedPreferences preferences;
+    public final MutableLiveData<Boolean> _reset = new MutableLiveData<>();
 
     @SuppressLint("HardwareIds")
     @Inject
@@ -60,6 +65,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
         this.sincronizador = sincronizador;
         this.sincronizador.setObserver(this);
         deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        preferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
         init();
     }
 
@@ -79,11 +85,28 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
     private final Runnable sendData = new Runnable() {
         @Override
         public void run() {
-            conexao.setDataUltimaAlteracao(formatter.format(new Date()));
-            conexao.setReproduzindo(tocando);
-            sincronizador.enviarDados(conexao, observable -> enviaDados(), observable -> enviaDados());
+            if (problemaComunicacao()){
+                _reset.setValue(true);
+            } else {
+                _reset.setValue(false);
+                conexao.setDataUltimaAlteracao(formatter.format(new Date()));
+                conexao.setReproduzindo(tocando);
+                preferences.edit().putString("lastTime", String.valueOf(new Date().getTime())).apply();
+                sincronizador.enviarDados(conexao, observable -> enviaDados(), observable -> enviaDados());
+            }
         }
     };
+
+    private boolean problemaComunicacao(){
+        String lastTime = preferences.getString("lastTime",null);
+        if (lastTime == null) {
+            preferences.edit().putLong("lastTime",new Date().getTime()).apply();
+            return false;
+        }
+        long diferenca = new Date().getTime() - Long.parseLong(lastTime);
+        long segundos = TimeUnit.SECONDS.convert(diferenca, TimeUnit.MILLISECONDS);
+        return segundos <= 3;
+    }
 
     private void enviaDados() {
         handler.removeCallbacks(sendData);
