@@ -96,7 +96,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
         onErro = false;
         conexao.setDataUltimaAlteracao(formatter.format(new Date()));
         conexao.setReproduzindo(tocando);
-        preferences.edit().putString("lastTime", String.valueOf(new Date().getTime())).apply();
+        preferences.edit().putLong("lastTime", new Date().getTime()).apply();
         sincronizador.enviarDados(conexao, observable -> enviaDados(), observable -> {
             onErro = true;
             enviaDados();
@@ -104,12 +104,16 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
     }
 
     private boolean problemaComunicacao(){
-        String lastTime = preferences.getString("lastTime",null);
-        if (lastTime == null) {
-            preferences.edit().putLong("lastTime",new Date().getTime()).apply();
+        long lastTime = preferences.getLong("lastTime",0);
+
+        if (lastTime == 0) {
             return false;
         }
-        long diferenca = new Date().getTime() - Long.parseLong(lastTime);
+
+        long currentTime = new Date().getTime();
+        long max = Math.max(currentTime,lastTime);
+        long min = Math.min(currentTime,lastTime);
+        long diferenca = max - min;
         long segundos = TimeUnit.SECONDS.convert(diferenca, TimeUnit.MILLISECONDS);
         return segundos < 4;
     }
