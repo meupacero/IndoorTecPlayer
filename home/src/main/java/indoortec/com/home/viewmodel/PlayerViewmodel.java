@@ -82,20 +82,26 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
         }
     }
 
-    private final Runnable sendData = new Runnable() {
-        @Override
-        public void run() {
-            if (problemaComunicacao()){
-                _reset.setValue(true);
-            } else {
-                _reset.setValue(false);
-                conexao.setDataUltimaAlteracao(formatter.format(new Date()));
-                conexao.setReproduzindo(tocando);
-                preferences.edit().putString("lastTime", String.valueOf(new Date().getTime())).apply();
-                sincronizador.enviarDados(conexao, observable -> enviaDados(), observable -> enviaDados());
-            }
-        }
+    private boolean onErro = false;
+
+    private final Runnable sendData = () -> {
+        if (onErro)
+            continuar();
+        else if (problemaComunicacao())
+            _reset.setValue(true);
+        else continuar();
     };
+
+    private void continuar() {
+        onErro = false;
+        conexao.setDataUltimaAlteracao(formatter.format(new Date()));
+        conexao.setReproduzindo(tocando);
+        preferences.edit().putString("lastTime", String.valueOf(new Date().getTime())).apply();
+        sincronizador.enviarDados(conexao, observable -> enviaDados(), observable -> {
+            onErro = true;
+            enviaDados();
+        });
+    }
 
     private boolean problemaComunicacao(){
         String lastTime = preferences.getString("lastTime",null);
@@ -105,7 +111,7 @@ public class PlayerViewmodel extends ViewModel implements Observer<Object>, Runn
         }
         long diferenca = new Date().getTime() - Long.parseLong(lastTime);
         long segundos = TimeUnit.SECONDS.convert(diferenca, TimeUnit.MILLISECONDS);
-        return segundos <= 3;
+        return segundos < 4;
     }
 
     private void enviaDados() {

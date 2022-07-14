@@ -82,6 +82,9 @@ public class PlayerFragment extends Fragment implements Observer<Midia>, MediaPl
         });
         playerViewmodel._reset.observe(getViewLifecycleOwner(), aBoolean -> {
             if (aBoolean){
+                playerViewmodel._reset.removeObservers(getViewLifecycleOwner());
+                playerViewmodel._reset.setValue(false);
+
                 Intent intent = new Intent(requireActivity(), requireActivity().getClass());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

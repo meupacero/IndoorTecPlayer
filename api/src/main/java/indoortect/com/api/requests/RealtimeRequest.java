@@ -1,9 +1,11 @@
 package indoortect.com.api.requests;
 
+import android.nfc.NfcAdapter;
 import android.os.Handler;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,7 +36,23 @@ public class RealtimeRequest {
     }
 
     public void setValue(Object object, Observer<Boolean> observer, Observer<Exception> exceptionObserver) {
-        databaseReference.setValue(object).addOnSuccessListener(unused -> observer.observer(true)).addOnFailureListener(exceptionObserver::observer);
+        final boolean[] sucesso = {false};
+        final boolean[] timeout = {false};
+
+        databaseReference.setValue(object).addOnSuccessListener(unused -> {
+            if (timeout[0])
+                return;
+
+            sucesso[0] = true;
+            observer.observer(true);
+        });
+
+        handler.postDelayed(()-> {
+            if (!sucesso[0]) {
+                timeout[0] = true;
+                exceptionObserver.observer(new Exception("Não foi possível se comunicar com o servidor"));
+            }
+        },10 * 1000L);
     }
 
     public void remove(Observer<Boolean> sucesso,Observer<Exception> erro) {
